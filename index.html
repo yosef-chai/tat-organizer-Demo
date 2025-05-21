@@ -1,0 +1,1536 @@
+<!--בס"ד -->
+<!DOCTYPE html>
+<html lang="he">
+<head>
+  <meta charset="UTF-8">
+  <title>ת''ת organizer | ניהול תורמים וסיירות</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600&family=Assistant:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- תוכן ראשי של העמוד -->
+  <div id="mainContent";">
+    
+    <!-- כותרת עליונה ותפריט ניווט -->
+    <div class="header">
+      <img src="לוגו ת''ת organizer.png" alt="לוגו" class="logo">
+      <h1 id="mainTitle" tabindex="0">ת''ת organizer</h1>
+      <div class="extra-buttons">
+        <button id="settingsBtn" tabindex="0" role="button" aria-label="פתח תפריט הגדרות" title="פתח תפריט הגדרות"><i class="fas fa-cog"></i> הגדרות</button>
+        <button id="addDonorBtn" tabindex="0" role="button" aria-label="הוסף תורם חדש" title="הוסף תורם חדש"><i class="fas fa-user-plus"></i> הוסף תורם</button>
+        <button id="addCampaignBtn" tabindex="0" role="button" aria-label="הוסף סיירת חדשה" title="הוסף סיירת חדשה"><i class="fas fa-plus"></i> הוסף סיירת</button>
+        <button id="autoCampaignBtn" tabindex="0" role="button" aria-label="צור סיירת אוטומטית" title="צור סיירת אוטומטית"><i class="fa-solid fa-wand-magic-sparkles"></i> סיירת אוטומטית</button>
+        <button onclick="scrollToSection('donorTableSection')" tabindex="0" role="button" aria-label="גלול לטבלת התורמים" title="גלול לטבלת התורמים"><i class="fas fa-users"></i> תורמים</button>
+        <button onclick="scrollToSection('campaignTableSection')" tabindex="0" role="button" aria-label="גלול לטבלת הסיירות" title="גלול לטבלת הסיירות"><i class="fas fa-route"></i> סיירות</button>
+        <button onclick="scrollToSection('statsTablesSection')" tabindex="0" role="button" aria-label="גלול לסטטיסטיקות" title="גלול לסטטיסטיקות"><i class="fas fa-chart-bar"></i> סטטיסטיקות</button>
+      </div>
+    </div>
+
+    <!-- סעיף ניהול תורמים -->
+<section id="donorTableSection">
+  <h2>תורמים</h2>
+  <div class="search-container">
+    <input type="text" id="searchFirstName" placeholder="שם פרטי" tabindex="0">
+    <input type="text" id="searchLastName" placeholder="שם משפחה" tabindex="0">
+    <input type="text" id="searchCity" placeholder="עיר" tabindex="0">
+    <input type="text" id="searchStreet" placeholder="רחוב" tabindex="0">
+    <select id="searchDonorType" tabindex="0">
+      <option value="">-- סוג תורם --</option>
+      <option value="נדיב">נדיב</option>
+      <option value="בוגר">בוגר</option>
+      <option value="אבא של בחור">אבא של בחור</option>
+      <option value="אבא של בוגר">אבא של בוגר</option>
+      <option value="שווער של בוגר">שווער של בוגר</option>
+      <option value="כולל">כולל</option>
+      <option value="לא ידוע">לא ידוע</option>
+    </select>
+    <select id="searchDonationDate" tabindex="0">
+      <option value="">-- מועד התרמה --</option>
+      <option value="ט אדר">ט אדר</option>
+      <option value="י אדר">י אדר</option>
+      <option value="יא אדר">יא אדר</option>
+      <option value="יב אדר">יב אדר</option>
+      <option value="יג אדר">יג אדר</option>
+      <option value="יד אדר">יד אדר</option>
+      <option value="טו אדר">טו אדר</option>
+    </select>
+  </div>
+  <div class="action-buttons">
+    <button id="editSelectedBtn" tabindex="0" role="button" aria-label="ערוך תורמים מסומנים" title="ערוך תורמים מסומנים">
+      <i class="fas fa-edit"></i> ערוך מסומנים
+    </button>
+    <button id="deleteSelectedBtn" tabindex="0" role="button" aria-label="מחק תורמים מסומנים" title="מחק תורמים מסומנים">
+      <i class="fas fa-trash"></i> מחק מסומנים
+    </button>
+    <button id="toggleUnassignedBtn" tabindex="0" role="button" aria-label="הצג תורמים לא משובצים" title="הצג תורמים לא משובצים">
+      <i class="fas fa-filter"></i> תורמים לא משובצים
+    </button>
+  </div>
+  <div class="table-container">
+    <table id="donorTable">
+          <thead>
+            <tr>
+              <th><input type="checkbox" id="masterCheckbox" tabindex="0"></th>
+              <th data-sort="firstName">שם פרטי</th>
+              <th data-sort="lastName">שם משפחה</th>
+              <th data-sort="city">עיר</th>
+              <th data-sort="street">רחוב</th>
+              <th data-sort="streetNumber">מספר</th>
+              <th data-sort="phone">טלפון</th>
+              <th data-sort="donorType">סוג תורם</th>
+              <th data-sort="donationDate">מועד התרמה</th>
+              <th data-sort="donationLastYear">תרומה שנה שעברה</th>
+              <th data-sort="donationCurrentYear">תרומה שנה נוכחית</th>
+              <th data-sort="notes">הערות</th>
+              <th class="actions">פעולות</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- סעיף ניהול סיירות -->
+    <section id="campaignTableSection">
+      <h2>סיירות התרמה</h2>
+      <div class="search-container">
+        <input type="text" id="searchCampaignName" placeholder="שם סיירת" tabindex="0">
+        <input type="text" id="searchCampaignCity" placeholder="עיר" tabindex="0">
+        <input type="text" id="searchCampaignStreet" placeholder="רחוב" tabindex="0">
+        <input type="text" id="searchCampaignStreetNumber" placeholder="מספר רחוב" tabindex="0">
+        <select id="searchCampaignDate" tabindex="0">
+          <option value="">-- מועד התרמה --</option>
+          <option value="ט אדר">ט אדר</option>
+          <option value="י אדר">י אדר</option>
+          <option value="יא אדר">יא אדר</option>
+          <option value="יב אדר">יב אדר</option>
+          <option value="יג אדר">יג אדר</option>
+          <option value="יד אדר">יד אדר</option>
+          <option value="טו אדר">טו אדר</option>
+        </select>
+      </div>
+      <div class="table-container">
+        <table id="campaignTable">
+          <thead>
+            <tr>
+              <th data-sort="name">שם הסיירת</th>
+              <th data-sort="date">מועד התרמה</th>
+              <th>תורמים</th>
+              <th>פעולות</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- סעיף סטטיסטיקות וגרפים -->
+    <section id="statsTablesSection">
+      <h2 class="stats-title">סטטיסטיקות</h2>
+      <div class="stats-cards">
+        <div class="stat-card">
+          <i class="fas fa-money-bill-wave"></i>
+          <h4>סך כל התרומות שנה שעברה</h4>
+          <p id="totalLastYear">0</p>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-money-bill-wave"></i>
+          <h4>סך כל התרומות השנה</h4>
+          <p id="totalThisYear">0</p>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-users"></i>
+          <h4>מספר התורמים שתרמו שנה שעברה</h4>
+          <p id="donorsLastYear">0</p>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-users"></i>
+          <h4>מספר התורמים שתרמו השנה</h4>
+          <p id="donorsThisYear">0</p>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-route"></i>
+          <h4>מספר הסיירות הקיים</h4>
+          <p id="numCampaigns">0</p>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-user-times"></i>
+          <h4>מספר התורמים שאינם משויכים לסיירת</h4>
+          <p id="unassignedDonors">0</p>
+        </div>
+      </div>
+      <div class="summary-tables">
+        <div class="summary-table-container">
+          <div class="summary-header">
+            <h3>סיכום לפי עיר</h3>
+            <button id="exportCitySummaryBtn" tabindex="0" role="button" aria-label="ייצא סיכום ערים ל-CSV" title="ייצא סיכום ערים ל-CSV"><i class="fas fa-file-csv"></i> ייצא ל-CSV</button>
+          </div>
+          <div class="table-container">
+            <table id="citySummaryTable">
+              <thead>
+                <tr>
+                  <th data-sort="city">עיר</th>
+                  <th data-sort="numAddresses">מספר כתובות</th>
+                  <th data-sort="totalLastYear">סכום תרומות שנה שעברה</th>
+                  <th data-sort="totalThisYear">סכום תרומות השנה</th>
+                  <th data-sort="numCampaigns">מספר סיירות</th>
+                  <th data-sort="unassignedDonors">תורמים ללא סיירת</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="summary-table-container">
+          <div class="summary-header">
+            <h3>סיכום לפי סיירת</h3>
+            <button id="exportCampaignSummaryBtn" tabindex="0" role="button" aria-label="ייצא סיכום סיירות ל-CSV" title="ייצא סיכום סיירות ל-CSV"><i class="fas fa-file-csv"></i> ייצא ל-CSV</button>
+          </div>
+          <div class="table-container">
+            <table id="campaignSummaryTable">
+              <thead>
+                <tr>
+                  <th data-sort="name">שם הסיירת</th>
+                  <th data-sort="numAddresses">סך הכתובות</th>
+                  <th data-sort="donorsThisYear">סך התורמים שתרמו השנה</th>
+                  <th data-sort="totalThisYear">סכום כולל שנאסף השנה</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- אזור הצגת גרפים -->
+    <section class="graphs" id="graphsSection"></section>
+
+    <!-- מודל הוספה/עריכת תורם -->
+<div id="donorModal" class="modal" role="dialog" aria-labelledby="donorModalTitle">
+  <div class="modal-content">
+    <span class="close" id="closeDonorModal" tabindex="0" role="button" aria-label="סגור חלון">×</span>
+    <h3 id="donorModalTitle">הוסף/ערוך תורם</h3>
+    <form id="donorForm">
+      <input type="hidden" id="donorId">
+
+<!-- פרטים אישיים -->
+<div class="form-section">
+  <h4>פרטים אישיים</h4>
+  <div class="form-row">
+    <div class="form-group">
+      <label for="firstName">שם פרטי:</label>
+      <input type="text" id="firstName">
+    </div>
+    <div class="form-group">
+      <label for="lastName">שם משפחה: <span style="color:red">*</span></label>
+      <input type="text" id="lastName" required>
+    </div>
+    <div class="form-group">
+      <label for="phone">טלפון:</label>
+      <input type="tel" id="phone">
+    </div>
+  </div>
+</div>
+
+<!-- כתובת -->
+<div class="form-section">
+  <h4>כתובת</h4>
+  <div class="form-row">
+    <div class="form-group">
+      <label for="city">עיר: <span style="color:red">*</span></label>
+      <input type="text" id="city" required>
+    </div>
+    <div class="form-group">
+      <label for="street">רחוב: <span style="color:red">*</span></label>
+      <input type="text" id="street" required>
+    </div>
+    <div class="form-group">
+      <label for="streetNumber">מספר רחוב: <span style="color:red">*</span></label>
+      <input type="text" id="streetNumber" required>
+    </div>
+  </div>
+</div>
+
+<!-- מידע על התורם -->
+<div class="form-section">
+  <h4>מידע על התורם</h4>
+  <div class="form-row">
+    <div class="form-group">
+      <label for="donorType">סוג תורם:</label>
+      <select id="donorType">
+        <option value="נדיב">נדיב</option>
+        <option value="בוגר">בוגר</option>
+        <option value="אבא של בחור">אבא של בחור</option>
+        <option value="אבא של בוגר">אבא של בוגר</option>
+        <option value="שווער של בוגר">שווער של בוגר</option>
+        <option value="כולל">כולל</option>
+        <option value="לא ידוע" selected>לא ידוע</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="donationDate">מועד התרמה:</label>
+      <select id="donationDate">
+        <option value="">-- בחר מועד --</option>
+        <option value="ט אדר">ט אדר</option>
+        <option value="י אדר">י אדר</option>
+        <option value="יא אדר">יא אדר</option>
+        <option value="יב אדר">יב אדר</option>
+        <option value="יג אדר">יג אדר</option>
+        <option value="יד אדר">יד אדר</option>
+        <option value="טו אדר">טו אדר</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+      <!-- סכומי תרומות -->
+      <div class="form-section">
+        <h4>סכומי תרומות</h4>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="donationLastYear">תרומה שנה שעברה:</label>
+            <input type="number" id="donationLastYear" min="0" tabindex="0">
+          </div>
+          <div class="form-group">
+            <label for="donationCurrentYear">תרומה שנה נוכחית:</label>
+            <input type="number" id="donationCurrentYear" min="0" tabindex="0">
+          </div>
+        </div>
+      </div>
+
+      <!-- הערות -->
+      <div class="form-section">
+        <h4>הערות</h4>
+        <div class="form-group">
+          <label for="notes">הערות:</label>
+          <textarea id="notes" tabindex="0"></textarea>
+        </div>
+      </div>
+
+      <button type="submit" tabindex="0"><i class="fas fa-save"></i> שמור</button>
+    </form>
+  </div>
+</div>
+
+    <!-- מודל בחירת מיקום ממפה -->
+    <div id="mapModal" class="modal" role="dialog" aria-labelledby="mapModalTitle">
+      <div class="modal-content">
+        <span class="close" id="closeMapModal" tabindex="0" role="button" aria-label="סגור חלון">×</span>
+        <h3 id="mapModalTitle">בחר כתובת מהמפה</h3>
+        <p id="currentAddressText">כתובת נוכחית: <span id="currentAddress"></span></p>
+        <p>לחץ על מיקום במפה, או השתמש בתיבת החיפוש כדי לבחור כתובת.</p>
+        <div id="map" style="height: 400px; width: 100%; margin-top: 10px;"></div>
+        <button id="selectLocationBtn" style="margin-top: 10px;" tabindex="0"><i class="fas fa-map-marker-alt"></i> בחר מיקום זה</button>
+      </div>
+    </div>
+
+    <!-- מודל עריכת תורמים מרובים -->
+    <div id="editMultipleModal" class="modal" role="dialog" aria-labelledby="editMultipleModalTitle">
+      <div class="modal-content">
+        <span class="close" id="closeEditMultipleModal" tabindex="0" role="button" aria-label="סגור חלון">×</span>
+        <h3 id="editMultipleModalTitle">עריכת תורמים מסומנים</h3>
+        <form id="editMultipleForm">
+          <p>עדכן שדות עבור כל התורמים שנבחרו, השאר ריק אם אין שינוי.</p>
+          <label for="editDonationCurrentYear">תרומה שנה נוכחית:</label>
+          <input type="number" id="editDonationCurrentYear" min="0" tabindex="0">
+          <label for="editDonationDate">מועד התרמה:</label>
+          <select id="editDonationDate" tabindex="0">
+            <option value="">-- בחר מועד --</option>
+            <option value="ט אדר">ט אדר</option>
+            <option value="י אדר">י אדר</option>
+            <option value="יא אדר">יא אדר</option>
+            <option value="יב אדר">יב אדר</option>
+            <option value="יג אדר">יג אדר</option>
+            <option value="יד אדר">יד אדר</option>
+            <option value="טו אדר">טו אדר</option>
+          </select>
+          <label for="editDonorType">סוג תורם:</label>
+          <select id="editDonorType" tabindex="0">
+            <option value="">-- בחר סוג --</option>
+            <option value="נדיב">נדיב</option>
+            <option value="בוגר">בוגר</option>
+            <option value="אבא של בחור">אבא של בחור</option>
+            <option value="אבא של בוגר">אבא של בוגר</option>
+            <option value="שווער של בוגר">שווער של בוגר</option>
+            <option value="כולל">כולל</option>
+            <option value="לא ידוע">לא ידוע</option>
+          </select>
+          <button type="submit" tabindex="0"><i class="fas fa-save"></i> עדכן</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- מודל יצירת קשר טלפוני -->
+    <div id="phoneModal" class="modal" role="dialog" aria-labelledby="phoneModalTitle">
+      <div class="modal-content">
+        <span class="close" id="closePhoneModal" tabindex="0" role="button" aria-label="סגור חלון">×</span>
+        <h3 id="phoneModalTitle">יצירת קשר</h3>
+        <p id="phoneNumber"></p>
+        <button id="callBtn" tabindex="0"><i class="fas fa-phone"></i> התקשר</button>
+      </div>
+    </div>
+
+    <!-- מודל הוספה/עריכת סיירת -->
+<div id="campaignModal" class="modal" role="dialog" aria-labelledby="campaignModalTitle">
+  <div class="modal-content">
+    <span class="close" id="closeCampaignModal" tabindex="0" role="button" aria-label="סגור חלון">×</span>
+    <h3 id="campaignModalTitle">הוסף/ערוך סיירת</h3>
+    <form id="campaignForm">
+      <input type="hidden" id="campaignId">
+
+      <!-- שם הסיירת ומועד התרמה בשורה אחת -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="campaignName">שם הסיירת: <span style="color:red">*</span></label>
+          <input type="text" id="campaignName" required tabindex="0">
+        </div>
+        <div class="form-group">
+          <label for="campaignDate">מועד התרמה: <span style="color:red">*</span></label>
+          <select id="campaignDate" required tabindex="0">
+            <option value="">-- בחר מועד --</option>
+            <option value="ט אדר">ט אדר</option>
+            <option value="י אדר">י אדר</option>
+            <option value="יא אדר">יא אדר</option>
+            <option value="יב אדר">יב אדר</option>
+            <option value="יג אדר">יג אדר</option>
+            <option value="יד אדר">יד אדר</option>
+            <option value="טו אדר">טו אדר</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- שדות חיפוש התורמים בשורה אחת -->
+      <div class="form-row">
+        <input type="text" id="searchDonorFirstName" placeholder="שם פרטי או משפחה" tabindex="0">
+        <input type="text" id="searchDonorCity" placeholder="עיר" tabindex="0">
+        <input type="text" id="searchDonorStreet" placeholder="רחוב" tabindex="0">
+        <input type="text" id="searchDonorStreetNumber" placeholder="מספר רחוב" tabindex="0">
+        <select id="searchDonorDonationDate" tabindex="0">
+          <option value="">-- מועד התרמה --</option>
+          <option value="ט אדר">ט אדר</option>
+          <option value="י אדר">י אדר</option>
+          <option value="יא אדר">יא אדר</option>
+          <option value="יב אדר">יב אדר</option>
+          <option value="יג אדר">יג אדר</option>
+          <option value="יד אדר">יד אדר</option>
+          <option value="טו אדר">טו אדר</option>
+        </select>
+      </div>
+
+      <label>בחר תורמים:</label>
+      <div id="campaignDonorsContainer" class="checkbox-container"></div>
+
+      <!-- לחצן שמור מיושר למרכז -->
+      <div class="form-actions">
+        <button type="submit" tabindex="0"><i class="fas fa-save"></i> שמור</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+    <!-- מודל יצירת סיירת אוטומטית -->
+    <div id="autoCampaignModal" class="modal" role="dialog" aria-labelledby="autoCampaignModalTitle">
+      <div class="modal-content">
+        <span class="close" id="closeAutoCampaignModal" tabindex="0" role="button" aria-label="סגור חלון">×</span>
+        <h3 id="autoCampaignModalTitle">צור סיירת אוטומטית</h3>
+        <form id="autoCampaignForm">
+          <label for="autoCampaignCity">עיר:</label>
+          <select id="autoCampaignCity" required tabindex="0"></select>
+          <label for="autoCampaignDate">מועד התרמה:</label>
+          <select id="autoCampaignDate" required tabindex="0">
+            <option value="">-- בחר מועד --</option>
+            <option value="ט אדר">ט אדר</option>
+            <option value="י אדר">י אדר</option>
+            <option value="יא אדר">יא אדר</option>
+            <option value="יב אדר">יב אדר</option>
+            <option value="יג אדר">יג אדר</option>
+            <option value="יד אדר">יד אדר</option>
+            <option value="טו אדר">טו אדר</option>
+          </select>
+          <label for="autoCampaignNumDonors">מספר תורמים:</label>
+          <input type="number" id="autoCampaignNumDonors" min="2" required tabindex="0">
+          <button type="submit" tabindex="0"><i class="fa-solid fa-wand-magic-sparkles"></i> צור</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- מודל הגדרות -->
+    <div id="settingsModal" class="modal" role="dialog" aria-labelledby="settingsModalTitle">
+      <div class="modal-content">
+        <span class="close" id="closeSettingsModal" tabindex="0" role="button" aria-label="סגור חלון">×</span>
+        <h3 id="settingsModalTitle">הגדרות</h3>
+        <div class="settings-buttons">
+          <button id="checkDuplicatesBtn" tabindex="0" role="button" aria-label="בדוק תורמים כפולים" title="בדוק תורמים כפולים"><i class="fas fa-users"></i> בדוק תורמים כפולים</button>
+          <button id="checkAddressesBtn" tabindex="0" role="button" aria-label="בדוק כתובות" title="בדוק את כל הכתובות"><i class="fas fa-check"></i> בדוק את כל הכתובות</button>
+          <button id="setRoutePointsBtn" tabindex="0" role="button" aria-label="הגדר נקודות מסלול" title="הגדר נקודות מסלול"><i class="fas fa-map-marker-alt"></i> הגדר נקודות מסלול</button>
+          <button id="transferDonationsBtn" tabindex="0" role="button" aria-label="העבר תרומות לשנה שעברה" title="העבר תרומות לשנה שעברה"><i class="fas fa-exchange-alt"></i> העבר תרומות</button>
+          <button id="backupSettingsBtn" tabindex="0" role="button" aria-label="הגדרות גיבוי אוטומטי" title="הגדרות גיבוי אוטומטי"><i class="fas fa-clock"></i> הגדרות גיבוי אוטומטי</button>
+          <button id="exportDonorsBtn" tabindex="0" role="button" aria-label="ייצא תורמים ל-CSV" title="ייצא תורמים ל-CSV"><i class="fas fa-file-csv"></i> ייצוא תורמים</button>
+          <button id="importDonorsBtn" tabindex="0" role="button" aria-label="ייבא תורמים מ-CSV" title="ייבא תורמים מ-CSV"><i class="fas fa-file-import"></i> ייבוא תורמים</button>
+          <button id="exportCampaignsBtn" tabindex="0" role="button" aria-label="ייצא סיירות ל-CSV" title="ייצא סיירות ל-CSV"><i class="fas fa-file-csv"></i> ייצוא סיירות</button>
+          <button id="importCampaignsBtn" tabindex="0" role="button" aria-label="ייבא סיירות מ-CSV" title="ייבא סיירות מ-CSV"><i class="fas fa-file-import"></i> ייבוא סיירות</button>
+          <button id="exportAllBtn" tabindex="0" role="button" aria-label="ייצא כל הנתונים" title="ייצא כל הנתונים"><i class="fas fa-download"></i> ייצוא הכל</button>
+          <button id="importAllBtn" tabindex="0" role="button" aria-label="ייבא כל הנתונים" title="ייבא כל הנתונים"><i class="fas fa-upload"></i> ייבוא הכל</button>
+          <button id="resetBtn" tabindex="0" role="button" aria-label="אפס נתונים" title="אפס נתונים"><i class="fas fa-trash"></i> איפוס נתונים</button>
+          <button id="toggleModeBtn" tabindex="0" role="button" aria-label="החלף מצב תצוגה" title="החלף מצב תצוגה"><i class="fas fa-moon"></i> מצב כהה</button>
+          <button id="helpBtn" tabindex="0" role="button" aria-label="עזרה" title="עזרה"><i class="fas fa-question-circle"></i> עזרה</button>
+          <button id="aboutBtn" tabindex="0" role="button" aria-label="אודות המערכת" title="אודות המערכת"><i class="fas fa-info-circle"></i> אודות</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- מודל הגדרת נקודות מסלול -->
+    <div id="routePointsModal" class="modal" role="dialog" aria-labelledby="routePointsModalTitle">
+      <div class="modal-content">
+        <span class="close" id="closeRoutePointsModal" tabindex="0" role="button" aria-label="סגור חלון">×</span>
+        <h3 id="routePointsModalTitle">הגדר נקודות מסלול</h3>
+        <form id="routePointsForm">
+          <label for="startCity">נקודת התחלה - עיר:</label>
+          <input type="text" id="startCity" required tabindex="0">
+          <label for="startStreet">רחוב:</label>
+          <input type="text" id="startStreet" required tabindex="0">
+          <label for="startStreetNumber">מספר:</label>
+          <input type="text" id="startStreetNumber" required tabindex="0">
+          <label for="endCity">נקודת סיום - עיר:</label>
+          <input type="text" id="endCity" required tabindex="0">
+          <label for="endStreet">רחוב:</label>
+          <input type="text" id="endStreet" required tabindex="0">
+          <label for="endStreetNumber">מספר:</label>
+          <input type="text" id="endStreetNumber" required tabindex="0">
+          <button id="resetRoutePointsBtn" type="button" tabindex="0" role="button" aria-label="אפס נקודות מסלול" title="אפס נקודות מסלול"><i class="fas fa-undo"></i> אפס נקודות מסלול</button>
+          <button type="submit" tabindex="0"><i class="fas fa-save"></i> שמור</button>
+        </form>
+      </div>
+    </div>
+
+<!-- מודל הצגת גרף מוגדל -->
+<div id="chartModal" class="modal" role="dialog" aria-labelledby="chartModalTitle">
+  <div class="modal-content">
+    <span class="close" id="closeChartModal" tabindex="0" role="button" aria-label="סגור חלון">×</span>
+    <button id="exportModalChartBtn" style="position: absolute; top: 10px; right: 50px;" aria-label="הורד תמונת גרף"><i class="fas fa-download"></i></button>
+    <canvas id="chartModalCanvas"></canvas>
+  </div>
+</div>
+
+    <!-- מודל תורמים כפולים -->
+    <div id="duplicatesModal" class="modal" role="dialog" aria-labelledby="duplicatesModalTitle">
+      <div class="modal-content">
+        <span class="close" id="closeDuplicatesModal" tabindex="0" role="button" aria-label="סגור חלון">×</span>
+        <h3 id="duplicatesModalTitle">תורמים כפולים</h3>
+        <div id="duplicatesList"></div>
+      </div>
+    </div>
+
+    <!-- מודל גיבוי אוטומטי -->
+<div id="backupSettingsModal" class="modal" role="dialog" aria-labelledby="backupSettingsTitle">
+  <div class="modal-content">
+    <span class="close" id="closeBackupSettingsModal" tabindex="0" role="button" aria-label="סגור חלון">×</span>
+    <h3 id="backupSettingsTitle">הגדרות גיבוי אוטומטי</h3>
+    <form id="backupSettingsForm">
+      <label for="backupFrequency">תדירות גיבוי אוטומטי:</label>
+      <label for="backupFrequency">(תופיע תזכורת בעת פתיחת המערכת במידה ועבר זמן הגיבוי)</label>
+      <select id="backupFrequency" tabindex="0">
+        <option value="none">ללא</option>
+        <option value="daily">יומי</option>
+        <option value="weekly">שבועי</option>
+        <option value="monthly">חודשי</option>
+      </select>
+      <button type="submit" tabindex="0"><i class="fas fa-save"></i> שמור</button>
+    </form>
+  </div>
+</div>
+
+    <!-- מודל עזרה -->
+    <div id="helpModal" class="modal" role="dialog" aria-labelledby="helpModalTitle">
+      <div class="modal-content help-modal-content">
+        <span class="close" id="closeHelpModal" tabindex="0" role="button" aria-label="סגור חלון">×</span>
+        <h3 class="help-title" id="helpModalTitle"><i class="fas fa-question-circle"></i> מדריך למשתמש</h3>
+        <div class="help-section">
+          <div class="help-subsection">
+            <h4 class="help-subsection-title"><i class="fas fa-info-circle"></i> מבוא</h4>
+            <p><strong>ברוכים הבאים לת''ת organizer, מערכת מודרנית לניהול תורמים וסיירות!</strong></p>
+            <p>מערכת זו תוכננה כדי לסייע לך לנהל תורמים וסיירות התרמה בצורה יעילה ומסודרת. מדריך זה נועד לספק לך הסבר מקיף על כל התכונות, כולל הוראות שימוש מפורטות, טיפים לשימוש מיטבי ואזהרות למניעת טעויות. אנו ממליצים לעיין במדריך לפני השימוש.</p>
+            <p><strong>שים לב!</strong> חלק מהתכונות זמינות רק לאחר רכישת המערכת.</p>
+          </div>
+          <div class="help-subsection">
+            <h4 class="help-subsection-title"><i class="fas fa-lock"></i> כניסה למערכת ואבטחה</h4>
+            <p>בעת פתיחת המערכת, תוצג חלונית הכניסה עליך להזין:</p>
+            <ul>
+              <li><strong>שם משתמש:</strong> יש להזין "ישיבה קוד XXX" כפי שקיבלתם בעת רכישת המערכת.</li>
+              <li><strong>סיסמא:</strong> יש להזין את הסיסמא שקיבלתם בעת רכישת המערכת.</li>
+            </ul>
+            <p><strong>אזהרה!</strong> שמור על פרטי הכניסה בסודיות כדי למנוע גישה לא מורשית.</p>
+          </div>
+          <div class="help-subsection">
+            <h4 class="help-subsection-title"><i class="fas fa-home"></i> ממשק ראשי וסרגל כלים</h4>
+            <p>לאחר ההתחברות, תראה את הממשק הראשי הכולל כותרת עליונה הניתנת לעריכה וסרגל כלים עם הכפתורים הבאים:</p>
+            <ul>
+              <li><i class="fas fa-cog"></i> <strong>הגדרות:</strong> פותח תפריט הגדרות עם אפשרויות ניהול מתקדמות (ראה פירוט בהמשך).</li>
+              <li><i class="fas fa-user-plus"></i> <strong>הוסף תורם:</strong> פותח חלון להוספת תורם חדש עם נתונים כמו שם, כתובת, טלפון ועוד.</li>
+              <li><i class="fas fa-plus"></i> <strong>הוסף סיירת:</strong> מאפשר יצירת סיירת חדשה והקצאת תורמים אליה.</li>
+              <li><i class="fa-solid fa-wand-magic-sparkles"></i> <strong>סיירת אוטומטית:</strong> יוצר סיירת אוטומטית לפי עיר, מועד ומספר תורמים.</li>
+              <li><i class="fas fa-users"></i> <strong>תורמים:</strong> גולל את העמוד ישירות לטבלת התורמים.</li>
+              <li><i class="fas fa-route"></i> <strong>סיירות:</strong> גולל את העמוד ישירות לטבלת הסיירות.</li>
+              <li><i class="fas fa-chart-bar"></i> <strong>סטטיסטיקות:</strong> גולל את העמוד ישירות לקטע הסטטיסטיקות והגרפים.</li>
+              <li><i class="fas fa-sign-out-alt"></i> <strong>יציאה:</strong> התנתקות מהמערכת.</li>
+            </ul>
+            <p><strong>טיפ:</strong> השתמש בכפתורי הניווט המהיר כדי לעבור במהירות בין החלקים השונים.</p>
+          </div>
+          <div class="help-subsection">
+            <h4 class="help-subsection-title"><i class="fas fa-users"></i> ניהול תורמים</h4>
+            <p>סעיף זה מאפשר לך לנהל את רשימת התורמים בצורה מלאה:</p>
+            <ul>
+              <li><i class="fas fa-search"></i> <strong>חיפוש וסינון:</strong> השתמש בשדות החיפוש מעל הטבלה (שם פרטי, שם משפחה, עיר, רחוב, סוג תורם, מועד התרמה) כדי לסנן את התורמים המוצגים.</li>
+              <li><i class="fas fa-table"></i> <strong>טבלת תורמים:</strong> מציגה את כל התורמים עם העמודות הבאות: שם פרטי, שם משפחה, עיר, רחוב, מספר, טלפון, סוג תורם, מועד התרמה, תרומה שנה שעברה, תרומה שנה נוכחית, הערות. פעולות זמינות:
+                <ul>
+                  <li><i class="fas fa-edit"></i> <strong>עריכה:</strong> פותח חלון לעדכון פרטי התורם.</li>
+                  <li><i class="fas fa-trash"></i> <strong>מחיקה:</strong> מוחק את התורם מהמערכת ומכל הסיירות המשויכות.</li>
+                  <li><i class="fas fa-map-marker-alt"></i> <strong>מיקום:</strong> פותח את הכתובת בגוגל מפות.</li>
+                  <li><i class="fas fa-phone"></i> <strong>שיחה:</strong> מציג את מספר הטלפון ומאפשר התקשרות ישירה דרך אפליקציה תואמת במכשיר.</li>
+                </ul>
+              </li>
+              <li><i class="fas fa-check-square"></i> <strong>עריכה מרובה:</strong> בחר תורמים מרובים בטבלה (באמצעות תיבות סימון) ולחץ על "ערוך מסומנים" כדי לעדכן שדות כמו תרומה נוכחית, מועד התרמה או סוג תורם עבור כולם בו זמנית.</li>
+              <li><i class="fas fa-trash"></i> <strong>מחיקה מרובה:</strong> בחר תורמים מרובים בטבלה (באמצעות תיבות סימון) ולחץ על "מחק מסומנים" כדי למחוק מספר תורמים בבת אחת.</li>
+              <li><i class="fas fa-filter"></i> <strong>תורמים לא משובצים:</strong> לחיצה על הכפתור מסננת את הטבלה כך שיוצגו רק תורמים שאינם משויכים לסיירת כלשהי.</li>
+            </ul>
+            <p><strong>טיפ:</strong> השתמש בסינון "תורמים לא משובצים" כדי לזהות תורמים שטרם שובצו לסיירות. <strong>אזהרה!</strong> מחיקת תורם היא פעולה בלתי הפיכה - ודא שאינך זקוק לנתונים לפני המחיקה.</p>
+          </div>
+          <div class="help-subsection">
+            <h4 class="help-subsection-title"><i class="fas fa-route"></i> ניהול סיירות</h4>
+            <p>סעיף זה מאפשר לך לנהל את סיירות ההתרמה:</p>
+            <ul>
+              <li><i class="fas fa-plus"></i> <strong>הוספת סיירת:</strong> פותח חלון שבו ניתן להזין שם סיירת, מועד התרמה ולבחור תורמים מתוך רשימה עם אפשרויות סינון.</li>
+              <li><i class="fa-solid fa-wand-magic-sparkles"></i> <strong>סיירת אוטומטית:</strong> יוצר סיירת חדשה באופן אוטומטי על בסיס עיר, מועד התרמה ומספר תורמים, תוך ניסיון לארגן את התורמים לפי קרבה גיאוגרפית (או לפי גובה התרומות אם הכתובות חסרות או שאינן תקינות).</li>
+              <li><i class="fas fa-table"></i> <strong>טבלת סיירות:</strong> מציגה שם הסיירת, מועד התרמה ורשימת התורמים המשויכים. פעולות זמינות:
+                <ul>
+                  <li><i class="fas fa-edit"></i> <strong>עריכה:</strong> פותח חלון לעדכון שם הסיירת, מועד התרמה והקצאת תורמים מחדש.</li>
+                  <li><i class="fas fa-trash"></i> <strong>מחיקה:</strong> מוחק את הסיירת מהמערכת.</li>
+                  <li><i class="fas fa-route"></i> <strong>מסלול:</strong> יוצר מסלול הליכה בגוגל מפות המבוסס על כתובות התורמים בסיירת (משתמש בנקודות התחלה וסיום אם הוגדרו).</li>
+                </ul>
+              </li>
+              <li><i class="fas fa-search"></i> <strong>חיפוש וסינון:</strong> סנן סיירות לפי שם, עיר, רחוב, מספר רחוב או מועד התרמה באמצעות שדות החיפוש מעל הטבלה.</li>
+            </ul>
+            <p><strong>טיפ:</strong> השתמש ב"סיירת אוטומטית" לחיסכון בזמן בעת יצירת סיירות גדולות.</p>
+          </div>
+          <div class="help-subsection">
+            <h4 class="help-subsection-title"><i class="fas fa-chart-bar"></i> סטטיסטיקות ודוחות</h4>
+            <p>סעיף זה מציג נתונים סטטיסטיים של מגוון פרמטרים במערכת:</p>
+            <ul>
+              <li><i class="fas fa-credit-card"></i> <strong>כרטיסי סטטיסטיקה:</strong> מראים נתונים מרכזיים:
+                <ul>
+                  <li>סך כל התרומות שנה שעברה והשנה.</li>
+                  <li>מספר התורמים שתרמו בכל שנה.</li>
+                  <li>מספר הסיירות הקיימות.</li>
+                  <li>מספר התורמים שאינם משויכים לסיירת.</li>
+                </ul>
+              </li>
+              <li><i class="fas fa-table"></i> <strong>טבלאות סיכום:</strong>
+                <ul>
+                  <li><strong>סיכום לפי עיר:</strong> מציג מספר כתובות, סכום התרומות (בשנה שעברה והשנה), מספר סיירות ותורמים שאינם משויכים בכל עיר.</li>
+                  <li><strong>סיכום לפי סיירת:</strong> מציג סך הכתובות, מספר התורמים שתרמו השנה וסכום כולל שנאסף לכל סיירת.</li>
+                  <li><i class="fas fa-file-csv"></i> <strong>ייצוא:</strong> ניתן לייצא כל טבלה לקובץ CSV.</li>
+                </ul>
+              </li>
+              <li><i class="fas fa-chart-line"></i> <strong>גרפים:</strong> גרפים אינטראקטיביים בתצוגה נוחה להבנה:
+                <ul>
+                  <li>סכום כולל שנאסף בכל סיירת בשנה הנוכחית.</li>
+                  <li>הפרשי תרומות בין שנה שעברה לשנה זו לכל תורם.</li>
+                  <li>מגמות תרומות לפי עיר.</li>
+                  <li><i class="fas fa-search-plus"></i> לחיצה על כפתור ההגדלה פותחת את הגרף בחלון מוגדל.</li>
+                  <li><i class="fas fa-download"></i> לחיצה על כפתור ההורדה תייצא קובץ תמונה של הגרף הנוכחי.</li>
+                </ul>
+              </li>
+            </ul>
+            <p><strong>טיפ:</strong> השתמש בייצוא ל-CSV לניתוח נתונים חיצוני ב-Excel.</p>
+          </div>
+          <div class="help-subsection">
+            <h4 class="help-subsection-title"><i class="fas fa-window-restore"></i> חלון ההגדרות</h4>
+            <p>המערכת כוללת הגדרות נוספות לשימוש נח יותר:</p>
+            <ul>
+              <li><i class="fas fa-users"></i> בדוק תורמים כפולים: מאפשר לבדוק ולמזג תורמים כפולים במערכת.</li>
+              <li><i class="fas fa-check"></i> בדוק את כל הכתובות: בודק את תקינות כל הכתובות ומאפשר תיקון כתובות לא תקינות.</li>
+              <li><i class="fas fa-map-marker-alt"></i> הגדר נקודות מסלול: מאפשר להגדיר נקודות התחלה וסיום למסלולים.</li>
+              <li><i class="fas fa-exchange-alt"></i> העבר תרומות: העברת תרומות משנה נוכחית לשנה שעברה.</li>
+              <li><i class="fas fa-clock"></i> הגדרות גיבוי אוטומטי: הגדרת תדירות הגיבוי האוטומטי.</li>
+              <li><i class="fas fa-file-csv"></i> ייצוא תורמים: ייצוא רשימת התורמים לקובץ CSV.</li>
+              <li><i class="fas fa-file-import"></i> ייבוא תורמים: ייבוא תורמים מקובץ CSV.</li>
+              <li><i class="fas fa-file-csv"></i> ייצוא סיירות: ייצוא רשימת הסיירות לקובץ CSV.</li>
+              <li><i class="fas fa-file-import"></i> ייבוא סיירות: ייבוא סיירות מקובץ CSV.</li>
+              <li><i class="fas fa-download"></i> ייצוא הכל: ייצוא כל הנתונים לקובץ JSON.</li>
+              <li><i class="fas fa-upload"></i> ייבוא הכל: ייבוא כל הנתונים מקובץ JSON.</li>
+              <li><i class="fas fa-trash"></i> איפוס נתונים: איפוס כל הנתונים במערכת (פעולה בלתי הפיכה).</li>
+              <li><i class="fas fa-moon"></i> החלף מצב תצוגה: החלפה בין מצב כהה למצב בהיר.</li>
+              <li><i class="fas fa-question-circle"></i> עזרה: פתיחת מדריך זה.</li>
+              <li><i class="fas fa-info-circle"></i> אודות: מידע על המערכת ותנאי הרישיון.</li>
+            </ul>
+          </div>
+          <div class="help-subsection">
+            <h4 class="help-subsection-title"><i class="fas fa-keyboard"></i> קיצורי מקשים</h4>
+            <p>המערכת תומכת בקיצורי מקשים לניווט מהיר ולשיפור היעילות, להלן רשימת כל קיצורי המקשים הזמינים:</p>
+            <ul>
+              <li><strong>Shift + S:</strong> פותח את חלון ההגדרות.</li>
+              <li><strong>Shift + D:</strong> פותח את חלון הוספת תורם חדש.</li>
+              <li><strong>Shift + C:</strong> פותח את חלון הוספת סיירת חדשה.</li>
+              <li><strong>Shift + A:</strong> פותח את חלון יצירת סיירת אוטומטית.</li>
+              <li><strong>Shift + T:</strong> גולל את העמוד ישירות לטבלת התורמים.</li>
+              <li><strong>Shift + R:</strong> גולל את העמוד ישירות לטבלת הסיירות.</li>
+              <li><strong>Shift + G:</strong> גולל את העמוד ישירות לסעיף הסטטיסטיקות.</li>
+              <li><strong>Shift + H:</strong> פותח את חלון העזרה.</li>
+              <li><strong>Shift + Q:</strong> יציאה מהמערכת.</li>
+              <li><strong>Escape:</strong> סוגר כל חלון שפתוח כרגע.</li>
+            </ul>
+            <p><strong>טיפ:</strong> השתמש בקיצורי המקשים כדי לחסוך זמן ולשפר את מהירות העבודה.</p>
+          </div>
+          <div class="help-subsection">
+            <h4 class="help-subsection-title"><i class="fas fa-lightbulb"></i> טיפים ואזהרות</h4>
+            <ul>
+              <li><i class="fas fa-check"></i> ודא שכל הכתובות תקינות (כולל מספרי הרחובות) לפני יצירת מסלולים.</li>
+              <li><i class="fas fa-exclamation-triangle"></i> בצע גיבוי לפני ייבוא/ייצוא או איפוס נתונים.</li>
+              <li><i class="fas fa-check"></i> ודא את תקינות הקובץ לפני ייבוא נתונים למערכת.</li>
+              <li><i class="fas fa-edit"></i> בעריכה מרובה, בדוק את השדות המשותפים לפני שמירה.</li>
+              <li><i class="fas fa-exclamation-triangle"></i> מחיקת תורמים או סיירות היא פעולה בלתי הפיכה.</li>
+              <li><i class="fas fa-eye"></i> השתמש במצב כהה לתנאי תאורה נמוכים.</li>
+            </ul>
+          </div>
+          <p style="text-align: center; margin-top: 20px; font-size: 0.9em;">© כל הזכויות שמורות | יוסף חי יחזקאל</p>
+        </div>
+      </div>
+    </div>
+
+<!-- מודל אודות -->
+<div id="aboutModal" class="modal" role="dialog" aria-labelledby="aboutModalTitle">
+  <div class="modal-content help-modal-content">
+    <span class="close" id="closeAboutModal" tabindex="0" role="button" aria-label="סגור חלון">×</span>
+    <h3 class="help-title" id="aboutModalTitle"><i class="fas fa-info-circle"></i> אודות המערכת</h3>
+    <div class="help-section">
+      <div class="help-subsection">
+        <h4 class="help-subsection-title">גרסת המערכת</h4>
+        <p>4.2.1</p>
+      </div>
+      <div class="help-subsection">
+        <h4 class="help-subsection-title">תנאי הרישיון</h4>
+        <p>הסכם רישיון שימוש - ת"ת Organizer:</p>
+        <ol>
+          <li><strong>מבוא והגדרות</strong>
+            <ol>
+              <li>מערכת "ת"ת Organizer" נוצרה ונבנתה על ידי יוסף חי יחזקאל ("המפתח").</li>
+              <li>המוסד - גוף או ארגון אשר מורשה להשתמש במערכת זו לשימוש פנימי בלבד.</li>
+              <li>התוכנה - כוללת את כל הרכיבים, קוד המקור, התיעוד, העדכונים והשדרוגים.</li>
+              <li>גרסת Demo - גרסה מוגבלת של התוכנה אשר משמשת לצרכי הדגמה ובדיקת פונקציונליות, ללא תמיכה מלאה ולהגבלות שימוש כפי שמפורט בסעיפים נפרדים.</li>
+            </ol>
+          </li>
+          <li><strong>רישיון והשימוש בתוכנה</strong>
+            <ol>
+              <li>המפתח מעניק למוסד רישיון מוגבל, בלתי בלעדי ולא ניתן להעברה לשימוש פנימי בלבד.</li>
+              <li>אסור להעביר, להפיץ, לשנות או לבצע תהליך של חקירת קוד המקור ללא אישור בכתב מהמפתח.</li>
+              <li>גרסת Demo ותנאיה כפופים לסעיף 7 למטה, ובמקרה של שימוש בגרסה זו יש להקפיד על הכללים המפורטים.</li>
+            </ol>
+          </li>
+          <li><strong>מגבלות השימוש</strong>
+            <ol>
+              <li>השימוש בתוכנה הוא אך ורק למטרות פנימיות ואינו מיועד לשימוש מסחרי או להפצה לציבור.</li>
+              <li>על המשתמש להפעיל את התוכנה בהתאם להוראות ההתקנה, לתיעוד ולנהלים שנמסרו על ידי המפתח.</li>
+              <li>יש להבטיח שהשימוש בתוכנה עומד בכל הדרישות החוקיות – כולל חוקי זכויות יוצרים, חוק הגנת הפרטיות, תקנות הסייבר וכל דין אחר, וכן לעמוד בעקרונות ההלכה היהודית.</li>
+            </ol>
+          </li>
+          <li><strong>אחריות והגבלות אחריות</strong>
+            <ol>
+              <li>התוכנה מסופקת "כפי שהיא", והמפתח אינו מתחייב לתפקוד מושלם בכל מצב או לעדכניות מלאה של המערכת.</li>
+              <li>כל תקלות, נזקים, אובדן נתונים או נזקי המשך יהיו באחריות המוסד, אשר מחויב לבצע גיבויים ונהלי תחזוקה בהתאם להנחיות.</li>
+              <li>המפתח לא יהיה אחראי לכל נזק ישיר, עקיף, מקרי או מיוחד אשר עשוי להיגרם כתוצאה מהתקנה או השימוש בתוכנה.</li>
+            </ol>
+          </li>
+          <li><strong>קניין רוחני וזכויות יוצרים</strong>
+            <ol>
+              <li>כל הזכויות בתוכנה, בקוד המקור ובתיעוד שייכות בלעדית למפתח.</li>
+              <li>אין להסיר, לשנות או להסוות כל סימני זכויות יוצרים או הודעות סודיות הקיימים בתוכנה.</li>
+              <li>הפרה של הוראות אלו תהווה עילה לנקיטת הליכים משפטיים מתאימים.</li>
+            </ol>
+          </li>
+          <li><strong>אבטחת המידע וסודיות</strong>
+            <ol>
+              <li>המוסד מחויב לנקוט בכל אמצעי האבטחה הנדרשים, הכוללים שימוש בהצפנה, גיבויים סדירים ועדכונים למניעת גישה בלתי מורשית.</li>
+              <li>כל מידע שהתקבל על ידי המוסד במסגרת השימוש בתוכנה יסווג כסודי ולא יועבר לצד שלישי ללא אישור בכתב מהמפתח.</li>
+              <li>במקרה של אירועי אבטחה, על המוסד לדווח על כך במועד סביר ולפעול בהתאם להנחיות החוק.</li>
+            </ol>
+          </li>
+          <li><strong>תנאים לגרסת Demo</strong>
+            <ol>
+              <li>גרסת Demo ניתנת לצורך הדגמה ובדיקת פונקציונליות בלבד ואינה מיועדת לשימוש תפעולי קבוע או לעיבוד נתונים רגישים.</li>
+              <li>גרסת Demo מוגבלת בהיקף ותכונות, והמוסד נדרש לשים לב כי שימוש בגרסה זו אינו מהווה התחייבות לקניין התוכנה בגרסתה המלאה.</li>
+              <li>המוסד מאשר כי כל הנתונים המוזנים בגרסת Demo אינם מהווים מקור למידע עסקי רגיש וכי המפתח לא יהיה אחראי לכל נזק או אובדן נתונים שיתכן וייגרם כתוצאה מהגבלת גרסה זו.</li>
+              <li>שימוש בגרסת Demo כפוף להוראות הסעיפים 2-10 להבחנה היכן שרלוונטי, אך אין לראות בה התחייבות לתמיכה מלאה או עדכונים באופן רציף.</li>
+            </ol>
+          </li>
+          <li><strong>סיום ההסכם והפרות</strong>
+            <ol>
+              <li>הפרת כל תנאי מהסכם זה תוביל לסיום מיידי של הרישיון, כאשר על המוסד להפסיק את השימוש במערכת ולהשמיד כל עותק או גיבוי שברשותו.</li>
+              <li>חובות והתחייבויות שהצטברו לפני סיום הרישיון יישארו בתוקף גם לאחר סיומו.</li>
+            </ol>
+          </li>
+          <li><strong>דין, סמכות שיפוט והתאמות הלכתיות</strong>
+            <ol>
+              <li>הסכם זה כפוף לדיני מדינת ישראל, לרבות כל התקנות בתחום זכויות היוצרים, הגנת הפרטיות ואבטחת המידע.</li>
+              <li>כל סכסוך הנוגע להסכם זה יידון בבתי המשפט המוסמכים בישראל.</li>
+              <li>במקרה של סתירה בין הדין המשפטי לעקרונות ההלכה, ייערך דיון בכפוף להסכמה בין הצדדים או לפי פסיקה של גוף הלכתי מוסמך.</li>
+            </ol>
+          </li>
+          <li><strong>שינויים ועדכונים</strong>
+            <ol>
+              <li>כל שינוי בתנאי ההסכם יהיה תקף רק לאחר אישור בכתב של המפתח.</li>
+              <li>המפתח שומר לעצמו את הזכות לעדכן את ההסכם בהתאם לשינויים טכנולוגיים או לדרישות חוקיות חדשות, עם הודעה מראש למוסד.</li>
+            </ol>
+          </li>
+        </ol>
+      </div>
+      <div class="help-subsection">
+        <h4 class="help-subsection-title">זכויות יוצרים</h4>
+        <p>© כל הזכויות שמורות ליוסף חי יחזקאל.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- מודל בדיקת כתובות -->
+    <div id="addressCheckModal" class="modal" role="dialog" aria-labelledby="addressCheckTitle">
+      <div class="modal-content">
+        <span class="close" id="closeAddressCheckModal" tabindex="0" role="button" aria-label="סגור חלון">×</span>
+        <h3 id="addressCheckTitle">תוצאות בדיקת כתובות</h3>
+        <p id="addressCheckSummary"></p>
+        <div id="invalidAddressesList"></div>
+      </div>
+    </div>
+
+    <!-- מודל תיקון כתובת -->
+    <div id="fixAddressModal" class="modal" role="dialog" aria-labelledby="fixAddressModalTitle">
+      <div class="modal-content">
+        <span class="close" id="closeFixAddressModal" tabindex="0" role="button" aria-label="סגור חלון">×</span>
+        <h3 id="fixAddressModalTitle">תקן כתובת</h3>
+        <form id="fixAddressForm">
+          <input type="hidden" id="fixDonorId">
+          <label for="fixCity">עיר:</label>
+          <input type="text" id="fixCity" required tabindex="0">
+          <label for="fixStreet">רחוב:</label>
+          <input type="text" id="fixStreet" required tabindex="0">
+          <label for="fixStreetNumber">מספר רחוב:</label>
+          <input type="text" id="fixStreetNumber" required tabindex="0">
+          <button type="button" id="selectFromMapBtn" tabindex="0"><i class="fas fa-map"></i> בחר מהמפה</button>
+          <button type="submit" tabindex="0"><i class="fas fa-save"></i> שמור</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- קבצי ייבוא וסרגלי התקדמות -->
+    <input type="file" id="importDonorsFile" accept=".csv" style="display:none;">
+    <input type="file" id="importCampaignsFile" accept=".csv" style="display:none;">
+    <input type="file" id="importAllFile" accept=".json" style="display:none;">
+
+    <div id="progressBar" style="display:none;">
+      <p>בודק כתובות... <span id="progressPercentage">0%</span></p>
+      <p id="progressDetails">נבדקו: 0, נותרו: 0</p>
+      <progress id="progress" value="0" max="100"></progress>
+      <button id="cancelCheckBtn" tabindex="0">בטל</button>
+    </div>
+    <div id="importProgress" style="display:none;">
+      <p>מייבא נתונים... <span id="importPercentage">0%</span></p>
+      <progress id="importProgressBar" value="0" max="100"></progress>
+    </div>
+  </div>
+</body>
+
+  <!-- תוכן ראשי של העמוד -->
+  <div id="mainContent" style="display:none;">
+    <!-- חלק הכותרת העליונה -->
+    <div class="header">
+      <img src="לוגו ת''ת organizer.png" alt="לוגו" class="logo">
+      <h1 id="mainTitle" contenteditable="true" tabindex="0">ת''ת organizer</h1>
+      <div class="extra-buttons">
+        <button id="settingsBtn" tabindex="0" role="button" aria-label="פתח תפריט הגדרות" title="פתח תפריט הגדרות"><i class="fas fa-cog"></i> הגדרות</button>
+        <button id="addDonorBtn" tabindex="0" role="button" aria-label="הוסף תורם חדש" title="הוסף תורם חדש"><i class="fas fa-user-plus"></i> הוסף תורם</button>
+        <button id="addCampaignBtn" tabindex="0" role="button" aria-label="הוסף סיירת חדשה" title="הוסף סיירת חדשה"><i class="fas fa-plus"></i> הוסף סיירת</button>
+        <button id="autoCampaignBtn" tabindex="0" role="button" aria-label="צור סיירת אוטומטית" title="צור סיירת אוטומטית"><i class="fa-solid fa-wand-magic-sparkles"></i> סיירת אוטומטית</button>
+        <button onclick="scrollToSection('donorTableSection')" tabindex="0" role="button" aria-label="גלול לטבלת התורמים" title="גלול לטבלת התורמים"><i class="fas fa-users"></i> תורמים</button>
+        <button onclick="scrollToSection('campaignTableSection')" tabindex="0" role="button" aria-label="גלול לטבלת הסיירות" title="גלול לטבלת הסיירות"><i class="fas fa-route"></i> סיירות</button>
+        <button onclick="scrollToSection('statsTablesSection')" tabindex="0" role="button" aria-label="גלול לסטטיסטיקות" title="גלול לסטטיסטיקות"><i class="fas fa-chart-bar"></i> סטטיסטיקות</button>
+        <button id="logoutBtn" tabindex="0" role="button" aria-label="יציאה מהמערכת" title="יציאה מהמערכת"><i class="fas fa-sign-out-alt"></i> יציאה</button>
+      </div>
+    </div>
+
+    <!-- חלק טבלת התורמים -->
+    <section id="donorTableSection">
+      <h2>תורמים</h2>
+      <div class="search-container">
+        <input type="text" id="searchFirstName" placeholder="שם פרטי" tabindex="0">
+        <input type="text" id="searchLastName" placeholder="שם משפחה" tabindex="0">
+        <input type="text" id="searchCity" placeholder="עיר" tabindex="0">
+        <input type="text" id="searchStreet" placeholder="רחוב" tabindex="0">
+        <select id="searchDonorType" tabindex="0">
+          <option value="">-- סוג תורם --</option>
+          <option value="נדיב">נדיב</option>
+          <option value="בוגר">בוגר</option>
+          <option value="אבא של בחור">אבא של בחור</option>
+          <option value="אבא של בוגר">אבא של בוגר</option>
+          <option value="שווער של בוגר">שווער של בוגר</option>
+          <option value="כולל">כולל</option>
+          <option value="לא ידוע">לא ידוע</option>
+        </select>
+        <select id="searchDonationDate" tabindex="0">
+          <option value="">-- מועד התרמה --</option>
+          <option value="ט אדר">ט אדר</option>
+          <option value="י אדר">י אדר</option>
+          <option value="יא אדר">יא אדר</option>
+          <option value="יב אדר">יב אדר</option>
+          <option value="יג אדר">יג אדר</option>
+          <option value="יד אדר">יד אדר</option>
+          <option value="טו אדר">טו אדר</option>
+        </select>
+        <button id="editSelectedBtn" tabindex="0" role="button" aria-label="ערוך תורמים מסומנים" title="ערוך תורמים מסומנים"><i class="fas fa-edit"></i> ערוך מסומנים</button>
+        <button id="deleteSelectedBtn" tabindex="0" role="button" aria-label="מחק תורמים מסומנים" title="מחק תורמים מסומנים"><i class="fas fa-trash"></i> מחק מסומנים</button>
+        <button id="toggleUnassignedBtn" tabindex="0" role="button" aria-label="הצג תורמים לא משובצים" title="הצג תורמים לא משובצים"><i class="fas fa-filter"></i> תורמים לא משובצים</button>
+      </div>
+<div id="donorGrid" style="height: 500px; width: 100%;" class="ag-theme-alpine"></div>
+    </section>
+
+    <!-- חלק טבלת הסיירות -->
+    <section id="campaignTableSection">
+      <h2>סיירות התרמה</h2>
+      <div class="search-container">
+        <input type="text" id="searchCampaignName" placeholder="שם סיירת" tabindex="0">
+        <input type="text" id="searchCampaignCity" placeholder="עיר" tabindex="0">
+        <input type="text" id="searchCampaignStreet" placeholder="רחוב" tabindex="0">
+        <input type="text" id="searchCampaignStreetNumber" placeholder="מספר רחוב" tabindex="0">
+        <select id="searchCampaignDate" tabindex="0">
+          <option value="">-- מועד התרמה --</option>
+          <option value="ט אדר">ט אדר</option>
+          <option value="י אדר">י אדר</option>
+          <option value="יא אדר">יא אדר</option>
+          <option value="יב אדר">יב אדר</option>
+          <option value="יג אדר">יג אדר</option>
+          <option value="יד אדר">יד אדר</option>
+          <option value="טו אדר">טו אדר</option>
+        </select>
+      </div>
+<div id="campaignGrid" style="height: 500px; width: 100%;" class="ag-theme-alpine"></div>
+    </section>
+
+    <!-- חלק הסטטיסטיקות -->
+    <section id="statsTablesSection">
+      <h2 class="stats-title">סטטיסטיקות</h2>
+      <div class="stats-cards">
+        <div class="stat-card">
+          <i class="fas fa-money-bill-wave"></i>
+          <h4>סך כל התרומות שנה שעברה</h4>
+          <p id="totalLastYear">0</p>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-money-bill-wave"></i>
+          <h4>סך כל התרומות השנה</h4>
+          <p id="totalThisYear">0</p>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-users"></i>
+          <h4>מספר התורמים שתרמו שנה שעברה</h4>
+          <p id="donorsLastYear">0</p>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-users"></i>
+          <h4>מספר התורמים שתרמו השנה</h4>
+          <p id="donorsThisYear">0</p>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-route"></i>
+          <h4>מספר הסיירות הקיים</h4>
+          <p id="numCampaigns">0</p>
+        </div>
+        <div class="stat-card">
+          <i class="fas fa-user-times"></i>
+          <h4>מספר התורמים שאינם משויכים לסיירת</h4>
+          <p id="unassignedDonors">0</p>
+        </div>
+      </div>
+      <div class="summary-tables">
+        <div class="summary-table-container">
+          <div class="summary-header">
+            <h3>סיכום לפי עיר</h3>
+            <button id="exportCitySummaryBtn" tabindex="0" role="button" aria-label="ייצא סיכום ערים ל-CSV" title="ייצא סיכום ערים ל-CSV"><i class="fas fa-file-csv"></i> ייצא ל-CSV</button>
+          </div>
+<div id="citySummaryGrid" style="height: 300px; width: 100%;" class="ag-theme-alpine"></div>
+        </div>
+        <div class="summary-table-container">
+          <div class="summary-header">
+            <h3>סיכום לפי סיירת</h3>
+            <button id="exportCampaignSummaryBtn" tabindex="0" role="button" aria-label="ייצא סיכום סיירות ל-CSV" title="ייצא סיכום סיירות ל-CSV"><i class="fas fa-file-csv"></i> ייצא ל-CSV</button>
+          </div>
+<div id="campaignSummaryGrid" style="height: 300px; width: 100%;" class="ag-theme-alpine"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- חלק הגרפים -->
+    <section class="graphs" id="graphsSection"></section>
+
+    <!-- מודל הוספת/עריכת תורם -->
+    <div id="donorModal" class="modal" role="dialog" aria-labelledby="donorModalTitle">
+      <div class="modal-content">
+        <span class="close" id="closeDonorModal" tabindex="0" role="button" aria-label="סגור חלון">×</span>
+        <h3 id="donorModalTitle">הוסף/ערוך תורם</h3>
+        <form id="donorForm">
+          <input type="hidden" id="donorId">
+          <label for="firstName">שם פרטי:</label>
+          <input type="text" id="firstName" tabindex="0">
+          <label for="lastName">שם משפחה: <span style="color:red">*</span></label>
+          <input type="text" id="lastName" required tabindex="0">
+          <label for="city">עיר: <span style="color:red">*</span></label>
+          <input type="text" id="city" required tabindex="0">
+          <label for="street">רחוב: <span style="color:red">*</span></label>
+          <input type="text" id="street" required tabindex="0">
+          <label for="streetNumber">מספר רחוב: <span style="color:red">*</span></label>
+          <input type="text" id="streetNumber" required tabindex="0">
+          <label for="phone">טלפון:</label>
+          <input type="tel" id="phone" tabindex="0">
+          <label for="donorType">סוג תורם:</label>
+          <select id="donorType" tabindex="0">
+            <option value="נדיב">נדיב</option>
+            <option value="בוגר">בוגר</option>
+            <option value="אבא של בחור">אבא של בחור</option>
+            <option value="אבא של בוגר">אבא של בוגר</option>
+            <option value="שווער של בוגר">שווער של בוגר</option>
+            <option value="כולל">כולל</option>
+            <option value="לא ידוע" selected>לא ידוע</option>
+          </select>
+          <label for="donationDate">מועד התרמה:</label>
+          <select id="donationDate" tabindex="0">
+            <option value="">-- בחר מועד --</option>
+            <option value="ט אדר">ט אדר</option>
+            <option value="י אדר">י אדר</option>
+            <option value="יא אדר">יא אדר</option>
+            <option value="יב אדר">יב אדר</option>
+            <option value="יג אדר">יג אדר</option>
+            <option value="יד אדר">יד אדר</option>
+            <option value="טו אדר">טו אדר</option>
+          </select>
+          <label for="donationLastYear">תרומה שנה שעברה:</label>
+          <input type="number" id="donationLastYear" min="0" tabindex="0">
+          <label for="donationCurrentYear">תרומה שנה נוכחית:</label>
+          <input type="number" id="donationCurrentYear" min="0" tabindex="0">
+          <label for="notes">הערות:</label>
+          <textarea id="notes" tabindex="0"></textarea>
+          <button type="submit" tabindex="0"><i class="fas fa-save"></i> שמור</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- מודל מפה לבחירת מיקום -->
+    <div id="mapModal" class="modal" role="dialog" aria-labelledby="mapModalTitle">
+      <div class="modal-content">
+        <span class="close" id="closeMapModal" tabindex="0" role="button" aria-label="סגור חלון">×</span>
+        <h3 id="mapModalTitle">בחר כתובת מהמפה</h3>
+        <p id="currentAddressText">כתובת נוכחית: <span id="currentAddress"></span></p>
+        <p>לחץ על מיקום במפה, או השתמש בתיבת החיפוש כדי לבחור כתובת.</p>
+        <div id="map" style="height: 400px; width: 100%; margin-top: 10px;"></div>
+        <button id="selectLocationBtn" style="margin-top: 10px;" tabindex="0"><i class="fas fa-map-marker-alt"></i> בחר מיקום זה</button>
+      </div>
+    </div>
+
+    <!-- מודל עריכת תורמים מרובים -->
+    <div id="editMultipleModal" class="modal" role="dialog" aria-labelledby="editMultipleModalTitle">
+      <div class="modal-content">
+        <span class="close" id="closeEditMultipleModal" tabindex="0" role="button" aria-label="סגור חלון">×</span>
+        <h3 id="editMultipleModalTitle">עריכת תורמים מסומנים</h3>
+        <form id="editMultipleForm">
+          <p>עדכן שדות עבור כל התורמים שנבחרו. השאר ריק אם אין שינוי.</p>
+          <label for="editDonationCurrentYear">תרומה שנה נוכחית:</label>
+          <input type="number" id="editDonationCurrentYear" min="0" tabindex="0">
+          <label for="editDonationDate">מועד התרמה:</label>
+          <select id="editDonationDate" tabindex="0">
+            <option value="">-- בחר מועד --</option>
+            <option value="ט אדר">ט אדר</option>
+            <option value="י אדר">י אדר</option>
+            <option value="יא אדר">יא אדר</option>
+            <option value="יב אדר">יב אדר</option>
+            <option value="יג אדר">יג אדר</option>
+            <option value="יד אדר">יד אדר</option>
+            <option value="טו אדר">טו אדר</option>
+          </select>
+          <label for="editDonorType">סוג תורם:</label>
+          <select id="editDonorType" tabindex="0">
+            <option value="">-- בחר סוג --</option>
+            <option value="נדיב">נדיב</option>
+            <option value="בוגר">בוגר</option>
+            <option value="אבא של בחור">אבא של בחור</option>
+            <option value="אבא של בוגר">אבא של בוגר</option>
+            <option value="שווער של בוגר">שווער של בוגר</option>
+            <option value="כולל">כולל</option>
+            <option value="לא ידוע">לא ידוע</option>
+          </select>
+          <button type="submit" tabindex="0"><i class="fas fa-save"></i> עדכן</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- מודל יצירת קשר -->
+    <div id="phoneModal" class="modal" role="dialog" aria-labelledby="phoneModalTitle">
+      <div class="modal-content">
+        <span class="close" id="closePhoneModal" tabindex="0" role="button" aria-label="סגור חלון">×</span>
+        <h3 id="phoneModalTitle">יצירת קשר</h3>
+        <p id="phoneNumber"></p>
+        <button id="callBtn" tabindex="0"><i class="fas fa-phone"></i> התקשר</button>
+      </div>
+    </div>
+
+    <!-- מודל הוספת/עריכת סיירת -->
+    <div id="campaignModal" class="modal" role="dialog" aria-labelledby="campaignModalTitle">
+      <div class="modal-content">
+        <span class="close" id="closeCampaignModal" tabindex="0" role="button" aria-label="סגור חלון">×</span>
+        <h3 id="campaignModalTitle">הוסף/ערוך סיירת</h3>
+        <form id="campaignForm">
+          <input type="hidden" id="campaignId">
+          <label for="campaignName">שם הסיירת: <span style="color:red">*</span></label>
+          <input type="text" id="campaignName" required tabindex="0">
+          <label for="campaignDate">מועד התרמה: <span style="color:red">*</span></label>
+          <select id="campaignDate" required tabindex="0">
+            <option value="">-- בחר מועד --</option>
+            <option value="ט אדר">ט אדר</option>
+            <option value="י אדר">י אדר</option>
+            <option value="יא אדר">יא אדר</option>
+            <option value="יב אדר">יב אדר</option>
+            <option value="יג אדר">יג אדר</option>
+            <option value="יד אדר">יד אדר</option>
+            <option value="טו אדר">טו אדר</option>
+          </select>
+          <label>בחר תורמים:</label>
+          <div class="search-container">
+            <input type="text" id="searchDonorFirstName" placeholder="שם פרטי" tabindex="0">
+            <input type="text" id="searchDonorCity" placeholder="עיר" tabindex="0">
+            <input type="text" id="searchDonorStreet" placeholder="רחוב" tabindex="0">
+            <input type="text" id="searchDonorStreetNumber" placeholder="מספר רחוב" tabindex="0">
+            <select id="searchDonorDonationDate" tabindex="0">
+              <option value="">-- מועד התרמה --</option>
+              <option value="ט אדר">ט אדר</option>
+              <option value="י אדר">י אדר</option>
+              <option value="יא אדר">יא אדר</option>
+              <option value="יב אדר">יב אדר</option>
+              <option value="יג אדר">יג אדר</option>
+              <option value="יד אדר">יד אדר</option>
+              <option value="טו אדר">טו אדר</option>
+            </select>
+          </div>
+          <label><input type="checkbox" id="selectAllDonors" tabindex="0"> בחר הכל</label>
+          <div id="campaignDonorsContainer" class="checkbox-container"></div>
+          <button type="submit" tabindex="0"><i class="fas fa-save"></i> שמור</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- מודל צור סיירת אוטומטית -->
+    <div id="autoCampaignModal" class="modal" role="dialog" aria-labelledby="autoCampaignModalTitle">
+      <div class="modal-content">
+        <span class="close" id="closeAutoCampaignModal" tabindex="0" role="button" aria-label="סגור חלון">×</span>
+        <h3 id="autoCampaignModalTitle">צור סיירת אוטומטית</h3>
+        <form id="autoCampaignForm">
+          <label for="autoCampaignCity">עיר:</label>
+          <select id="autoCampaignCity" required tabindex="0"></select>
+          <label for="autoCampaignDate">מועד התרמה:</label>
+          <select id="autoCampaignDate" required tabindex="0">
+            <option value="">-- בחר מועד --</option>
+            <option value="ט אדר">ט אדר</option>
+            <option value="י אדר">י אדר</option>
+            <option value="יא אדר">יא אדר</option>
+            <option value="יב אדר">יב אדר</option>
+            <option value="יג אדר">יג אדר</option>
+            <option value="יד אדר">יד אדר</option>
+            <option value="טו אדר">טו אדר</option>
+          </select>
+          <label for="autoCampaignNumDonors">מספר תורמים:</label>
+          <input type="number" id="autoCampaignNumDonors" min="2" required tabindex="0">
+          <button type="submit" tabindex="0"><i class="fa-solid fa-wand-magic-sparkles"></i> צור</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- מודל הגדרות -->
+    <div id="settingsModal" class="modal" role="dialog" aria-labelledby="settingsModalTitle">
+      <div class="modal-content">
+        <span class="close" id="closeSettingsModal" tabindex="0" role="button" aria-label="סגור חלון">×</span>
+        <h3 id="settingsModalTitle">הגדרות</h3>
+        <div class="settings-buttons">
+          <button id="exportDonorsBtn" tabindex="0" role="button" aria-label="ייצא תורמים ל-CSV" title="ייצא תורמים ל-CSV"><i class="fas fa-file-csv"></i> ייצוא תורמים</button>
+          <button id="importDonorsBtn" tabindex="0" role="button" aria-label="ייבא תורמים מ-CSV" title="ייבא תורמים מ-CSV"><i class="fas fa-file-import"></i> ייבוא תורמים</button>
+          <button id="exportCampaignsBtn" tabindex="0" role="button" aria-label="ייצא סיירות ל-CSV" title="ייצא סיירות ל-CSV"><i class="fas fa-file-csv"></i> ייצוא סיירות</button>
+          <button id="importCampaignsBtn" tabindex="0" role="button" aria-label="ייבא סיירות מ-CSV" title="ייבא סיירות מ-CSV"><i class="fas fa-file-import"></i> ייבוא סיירות</button>
+          <button id="toggleModeBtn" tabindex="0" role="button" aria-label="החלף מצב תצוגה" title="החלף מצב תצוגה"><i class="fas fa-moon"></i> מצב כהה</button>
+          <button id="transferDonationsBtn" tabindex="0" role="button" aria-label="העבר תרומות לשנה שעברה" title="העבר תרומות לשנה שעברה"><i class="fas fa-exchange-alt"></i> העבר תרומות</button>
+          <button id="setRoutePointsBtn" tabindex="0" role="button" aria-label="הגדר נקודות מסלול" title="הגדר נקודות מסלול"><i class="fas fa-map-marker-alt"></i> הגדר נקודות מסלול</button>
+          <button id="resetRoutePointsBtn" tabindex="0" role="button" aria-label="אפס נקודות מסלול" title="אפס נקודות מסלול"><i class="fas fa-undo"></i> אפס נקודות מסלול</button>
+          <button id="exportAllBtn" tabindex="0" role="button" aria-label="ייצא כל הנתונים" title="ייצא כל הנתונים"><i class="fas fa-download"></i> ייצוא הכל</button>
+          <button id="importAllBtn" tabindex="0" role="button" aria-label="ייבא כל הנתונים" title="ייבא כל הנתונים"><i class="fas fa-upload"></i> ייבוא הכל</button>
+          <button id="resetBtn" tabindex="0" role="button" aria-label="אפס נתונים" title="אפס נתונים"><i class="fas fa-trash"></i> איפוס נתונים</button>
+          <button id="checkAddressesBtn" tabindex="0" role="button" aria-label="בדוק כתובות" title="בדוק כתובות"><i class="fas fa-check"></i> בדוק את כל הכתובות</button>
+          <button id="checkDuplicatesBtn" tabindex="0" role="button" aria-label="בדוק תורמים כפולים" title="בדוק תורמים כפולים"><i class="fas fa-users"></i> בדוק תורמים כפולים</button>
+          <button id="aboutBtn" tabindex="0" role="button" aria-label="אודות המערכת" title="אודות המערכת"><i class="fas fa-info-circle"></i> אודות</button>
+          <button id="helpBtn" tabindex="0" role="button" aria-label="עזרה" title="עזרה"><i class="fas fa-question-circle"></i> עזרה</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- מודל הגדרת נקודות מסלול -->
+    <div id="routePointsModal" class="modal" role="dialog" aria-labelledby="routePointsModalTitle">
+      <div class="modal-content">
+        <span class="close" id="closeRoutePointsModal" tabindex="0" role="button" aria-label="סגור חלון">×</span>
+        <h3 id="routePointsModalTitle">הגדר נקודות מסלול</h3>
+        <form id="routePointsForm">
+          <label for="startCity">נקודת התחלה - עיר:</label>
+          <input type="text" id="startCity" required tabindex="0">
+          <label for="startStreet">רחוב:</label>
+          <input type="text" id="startStreet" required tabindex="0">
+          <label for="startStreetNumber">מספר:</label>
+          <input type="text" id="startStreetNumber" required tabindex="0">
+          <label for="endCity">נקודת סיום - עיר:</label>
+          <input type="text" id="endCity" required tabindex="0">
+          <label for="endStreet">רחוב:</label>
+          <input type="text" id="endStreet" required tabindex="0">
+          <label for="endStreetNumber">מספר:</label>
+          <input type="text" id="endStreetNumber" required tabindex="0">
+          <button type="submit" tabindex="0"><i class="fas fa-save"></i> שמור</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- מודל גרף מוגדל -->
+    <div id="chartModal" class="modal" role="dialog" aria-labelledby="chartModalTitle">
+      <div class="modal-content">
+        <span class="close" id="closeChartModal" tabindex="0" role="button" aria-label="סגור חלון">×</span>
+        <canvas id="chartModalCanvas"></canvas>
+      </div>
+    </div>
+
+    <!-- מודל תורמים כפולים -->
+    <div id="duplicatesModal" class="modal" role="dialog" aria-labelledby="duplicatesModalTitle">
+      <div class="modal-content">
+        <span class="close" id="closeDuplicatesModal" tabindex="0" role="button" aria-label="סגור חלון">×</span>
+        <h3 id="duplicatesModalTitle">תורמים כפולים</h3>
+        <div id="duplicatesList"></div>
+      </div>
+    </div>
+
+<!-- מודל עזרה -->
+<div id="helpModal" class="modal" role="dialog" aria-labelledby="helpModalTitle">
+  <div class="modal-content help-modal-content">
+    <span class="close" id="closeHelpModal" tabindex="0" role="button" aria-label="סגור חלון">×</span>
+    <h3 class="help-title" id="helpModalTitle"><i class="fas fa-question-circle"></i> מדריך למשתמש</h3>
+    <div class="help-section">
+      <!-- מבוא כללי -->
+      <div class="help-subsection">
+        <h4 class="help-subsection-title"><i class="fas fa-info-circle"></i> מבוא</h4>
+        <p>
+          <strong>ברוכים הבאים לת''ת organizer, מערכת מודרנית לניהול תורמים וסיירות!</strong>
+        <p>
+          מערכת זו תוכננה כדי לסייע לך לנהל תורמים וסיירות התרמה בצורה יעילה ומסודרת. מדריך זה נועד לספק לך הסבר מקיף על כל התכונות, כולל הוראות שימוש מפורטות, טיפים לשימוש מיטבי ואזהרות למניעת טעויות. אנו ממליצים לעיין במדריך לפני השימוש.
+        </p>
+      </div>
+      <!-- כניסה ואבטחה -->
+      <div class="help-subsection">
+        <h4 class="help-subsection-title"><i class="fas fa-lock"></i> כניסה למערכת ואבטחה</h4>
+        <p>
+          בעת פתיחת המערכת, תוצג חלונית הכניסה עליך להזין:
+        </p>
+        <ul>
+          <li><strong>שם משתמש:</strong> יש להזין "ישיבה קוד XXX" כפי שקיבלתם בעת רכישת המערכת.</li>
+          <li><strong>סיסמא:</strong> יש להזין את הסיסמא שקיבלתם בעת רכישת המערכת.</li>
+        </ul>
+        <p><strong>אזהרה!</strong> שמור על פרטי הכניסה בסודיות כדי למנוע גישה לא מורשית.</p>
+      </div>
+      <!-- ממשק ראשי וסרגל כלים -->
+      <div class="help-subsection">
+        <h4 class="help-subsection-title"><i class="fas fa-home"></i> ממשק ראשי וסרגל כלים</h4>
+        <p>
+          לאחר ההתחברות, תראה את הממשק הראשי הכולל כותרת עליונה הניתנת לעריכה וסרגל כלים עם הכפתורים הבאים:
+        </p>
+        <ul>
+          <li><i class="fas fa-cog"></i> <strong>הגדרות:</strong> פותח תפריט הגדרות עם אפשרויות ניהול מתקדמות (ראה פירוט בהמשך).</li>
+          <li><i class="fas fa-user-plus"></i> <strong>הוסף תורם:</strong> פותח חלון להוספת תורם חדש עם נתונים כמו שם, כתובת, טלפון ועוד.</li>
+          <li><i class="fas fa-plus"></i> <strong>הוסף סיירת:</strong> מאפשר יצירת סיירת חדשה והקצאת תורמים אליה.</li>
+          <li><i class="fa-solid fa-wand-magic-sparkles"></i> <strong>סיירת אוטומטית:</strong> יוצר סיירת אוטומטית לפי עיר, מועד ומספר תורמים.</li>
+          <li><i class="fas fa-users"></i> <strong>תורמים:</strong> גולל את העמוד ישירות לטבלת התורמים.</li>
+          <li><i class="fas fa-route"></i> <strong>סיירות:</strong> גולל את העמוד ישירות לטבלת הסיירות.</li>
+          <li><i class="fas fa-chart-bar"></i> <strong>סטטיסטיקות:</strong> גולל את העמוד ישירות לקטע הסטטיסטיקות והגרפים.</li>
+          <li><i class="fas fa-sign-out-alt"></i> <strong>יציאה:</strong> התנתקות מהמערכת.</li>
+        </ul>
+        <p><strong>טיפ:</strong> השתמש בכפתורי הניווט המהיר כדי לעבור במהירות בין החלקים השונים.</p>
+      </div>
+      <!-- ניהול תורמים -->
+      <div class="help-subsection">
+        <h4 class="help-subsection-title"><i class="fas fa-users"></i> ניהול תורמים</h4>
+        <p>סעיף זה מאפשר לך לנהל את רשימת התורמים בצורה מלאה:</p>
+        <ul>
+          <li><i class="fas fa-search"></i> <strong>חיפוש וסינון:</strong> השתמש בשדות החיפוש מעל הטבלה (שם פרטי, שם משפחה, עיר, רחוב, סוג תורם, מועד התרמה) כדי לסנן את התורמים המוצגים.</li>
+          <li><i class="fas fa-table"></i> <strong>טבלת תורמים:</strong> מציגה את כל התורמים עם העמודות הבאות: שם פרטי, שם משפחה, עיר, רחוב, מספר, טלפון, סוג תורם, מועד התרמה, תרומה שנה שעברה, תרומה שנה נוכחית, הערות. פעולות זמינות:
+            <ul>
+              <li><i class="fas fa-edit"></i> <strong>עריכה:</strong> פותח חלון לעדכון פרטי התורם.</li>
+              <li><i class="fas fa-trash"></i> <strong>מחיקה:</strong> מוחק את התורם מהמערכת ומכל הסיירות המשויכות.</li>
+              <li><i class="fas fa-map-marker-alt"></i> <strong>מיקום:</strong> פותח את הכתובת בגוגל מפות.</li>
+              <li><i class="fas fa-phone"></i> <strong>שיחה:</strong> מציג את מספר הטלפון ומאפשר התקשרות ישירה דרך אפליקציה תואמת במכשיר.</li>
+            </ul>
+          </li>
+          <li><i class="fas fa-check-square"></i> <strong>עריכה מרובה:</strong> בחר תורמים מרובים בטבלה (באמצעות תיבות סימון) ולחץ על "ערוך מסומנים" כדי לעדכן שדות כמו תרומה נוכחית, מועד התרמה או סוג תורם עבור כולם בו זמנית.</li>
+          <li><i class="fas fa-trash"></i> <strong>מחיקה מרובה:</strong> בחר תורמים מרובים בטבלה (באמצעות תיבות סימון) ולחץ על "מחק מסומנים" כדי למחוק מספר תורמים בבת אחת.</li>
+          <li><i class="fas fa-filter"></i> <strong>תורמים לא משובצים:</strong> לחיצה על הכפתור מסננת את הטבלה כך שיוצגו רק תורמים שאינם משויכים לסיירת כלשהי.</li>
+        </ul>
+        <p><strong>טיפ:</strong> השתמש בסינון "תורמים לא משובצים" כדי לזהות תורמים שטרם שובצו לסיירות. <strong>אזהרה!</strong> מחיקת תורם היא פעולה בלתי הפיכה - ודא שאינך זקוק לנתונים לפני המחיקה.</p>
+      </div>
+      <!-- ניהול סיירות -->
+      <div class="help-subsection">
+        <h4 class="help-subsection-title"><i class="fas fa-route"></i> ניהול סיירות</h4>
+        <p>סעיף זה מאפשר לך לנהל את סיירות ההתרמה:</p>
+        <ul>
+          <li><i class="fas fa-plus"></i> <strong>הוספת סיירת:</strong> פותח חלון שבו ניתן להזין שם סיירת, מועד התרמה ולבחור תורמים מתוך רשימה עם אפשרויות סינון.</li>
+          <li><i class="fa-solid fa-wand-magic-sparkles"></i> <strong>סיירת אוטומטית:</strong> יוצר סיירת חדשה באופן אוטומטי על בסיס עיר, מועד התרמה ומספר תורמים, תוך ניסיון לארגן את התורמים לפי קרבה גיאוגרפית (או לפי גובה התרומות אם הכתובות חסרות או שאינן תקינות).</li>
+          <li><i class="fas fa-table"></i> <strong>טבלת סיירות:</strong> מציגה שם הסיירת, מועד התרמה ורשימת התורמים המשויכים. פעולות זמינות:
+            <ul>
+              <li><i class="fas fa-edit"></i> <strong>עריכה:</strong> פותח חלון לעדכון שם הסיירת, מועד התרמה והקצאת תורמים מחדש.</li>
+              <li><i class="fas fa-trash"></i> <strong>מחיקה:</strong> מוחק את הסיירת מהמערכת.</li>
+              <li><i class="fas fa-route"></i> <strong>מסלול:</strong> יוצר מסלול הליכה בגוגל מפות המבוסס על כתובות התורמים בסיירת (משתמש בנקודות התחלה וסיום אם הוגדרו).</li>
+            </ul>
+          </li>
+          <li><i class="fas fa-search"></i> <strong>חיפוש וסינון:</strong> סנן סיירות לפי שם, עיר, רחוב, מספר רחוב או מועד התרמה באמצעות שדות החיפוש מעל הטבלה.</li>
+        </ul>
+        <p><strong>טיפ:</strong> השתמש ב"סיירת אוטומטית" לחיסכון בזמן בעת יצירת סיירות גדולות.</p>
+      </div>
+      <!-- סטטיסטיקות, טבלאות סיכום וגרפים -->
+      <div class="help-subsection">
+        <h4 class="help-subsection-title"><i class="fas fa-chart-bar"></i> סטטיסטיקות ודוחות</h4>
+        <p>סעיף זה מציג נתונים סטטיסטיים של מגוון פרמטרים במערכת:</p>
+        <ul>
+          <li><i class="fas fa-credit-card"></i> <strong>כרטיסי סטטיסטיקה:</strong> מראים נתונים מרכזיים:
+            <ul>
+              <li>סך כל התרומות שנה שעברה והשנה.</li>
+              <li>מספר התורמים שתרמו בכל שנה.</li>
+              <li>מספר הסיירות הקיימות.</li>
+              <li>מספר התורמים שאינם משויכים לסיירת.</li>
+            </ul>
+          </li>
+          <li><i class="fas fa-table"></i> <strong>טבלאות סיכום:</strong>
+            <ul>
+              <li><strong>סיכום לפי עיר:</strong> מציג מספר כתובות, סכום התרומות (בשנה שעברה והשנה), מספר סיירות ותורמים שאינם משויכים בכל עיר.</li>
+              <li><strong>סיכום לפי סיירת:</strong> מציג סך הכתובות, מספר התורמים שתרמו השנה וסכום כולל שנאסף לכל סיירת.</li>
+              <li><i class="fas fa-file-csv"></i> <strong>ייצוא:</strong> ניתן לייצא כל טבלה לקובץ CSV.</li>
+            </ul>
+          </li>
+          <li><i class="fas fa-chart-line"></i> <strong>גרפים:</strong> גרפים אינטראקטיביים בתצוגה נוחה להבנה:
+            <ul>
+              <li>סכום כולל שנאסף בכל סיירת בשנה הנוכחית (תרשים עמודות).</li>
+              <li>הפרשי תרומות בין שנה שעברה לשנה זו לכל תורם (תרשים עמודות).</li>
+              <li>מגמות תרומות לפי עיר (תרשים קווים).</li>
+              <li><i class="fas fa-search-plus"></i> לחיצה על כפתור ההגדלה פותחת את הגרף בחלון מוגדל.</li>
+              <li><i class="fas fa-download"></i> לחיצה על כפתור ההורדה תייצא קובץ תמונה של הגרף הנוכחי.</li>
+            </ul>
+          </li>
+        </ul>
+        <p><strong>טיפ:</strong> השתמש בייצוא ל-CSV לניתוח נתונים חיצוני ב-Excel. <strong>אזהרה!</strong> ודא שהנתונים מעודכנים לפני הייצוא.</p>
+      </div>
+      <!-- חלונות מודלים נוספים -->
+      <div class="help-subsection">
+        <h4 class="help-subsection-title"><i class="fas fa-window-restore"></i> חלון ההגדרות</h4>
+        <p>המערכת כוללת הגדרות נוספות לשימוש נח יותר:</p>
+        <ul>
+          <li><i class="fas fa-file-csv"></i> ייצוא תורמים/סיירות ל-CSV.</li>
+          <li><i class="fas fa-file-import"></i> ייבוא תורמים/סיירות מ-CSV.</li>
+          <li><i class="fas fa-clock"></i> גיבוי אוטומטי של כל נתוני המערכת.</li>
+          <li><i class="fas fa-moon"></i> שינוי מצב תצוגה (כהה/בהיר).</li>
+          <li><i class="fas fa-exchange-alt"></i> העברת תרומות משנה נוכחית לשנה שעברה.</li>
+          <li><i class="fas fa-map-marker-alt"></i> הגדרת נקודות התחלה וסיום למסלולים.</li>
+          <li><i class="fas fa-undo"></i> איפוס נקודות מסלול.</li>
+          <li><i class="fas fa-download"></i> ייצוא כל הנתונים ל-JSON.</li>
+          <li><i class="fas fa-upload"></i> ייבוא כל הנתונים מ-JSON.</li>
+          <li><i class="fas fa-trash"></i> איפוס כל הנתונים (בלתי הפיך).</li>
+          <li><i class="fas fa-check"></i> בדיקת תקינות כל הכתובות (עם אפשרות לתיקון).</li>
+          <li><i class="fas fa-question-circle"></i> פתיחת מדריך זה.</li>
+        </ul>
+      </div>
+      <!-- קיצורי מקשים -->
+      <div class="help-subsection">
+        <h4 class="help-subsection-title"><i class="fas fa-keyboard"></i> קיצורי מקשים</h4>
+        <p>המערכת תומכת בקיצורי מקשים לניווט מהיר ולשיפור היעילות. להלן רשימת כל קיצורי המקשים הזמינים:</p>
+        <ul>
+          <li><strong>Ctrl + S:</strong> פותח את חלון ההגדרות, שבו ניתן לגשת לאפשרויות כמו ייצוא, ייבוא, שינוי מצב תצוגה ועוד. לא יפעל אם חלון ההגדרות כבר פתוח.</li>
+          <li><strong>Ctrl + D:</strong> פותח את חלון הוספת תורם חדש, שבו ניתן להזין פרטים כמו שם, כתובת, טלפון ותרומות.</li>
+          <li><strong>Ctrl + C:</strong> פותח את חלון הוספת סיירת חדשה, שבו ניתן להגדיר שם הסיירת, מועד התרמה ולבחור תורמים.</li>
+          <li><strong>Ctrl + A:</strong> פותח את חלון יצירת סיירת אוטומטית, המאפשר יצירת סיירת על בסיס עיר, מועד ומספר תורמים באופן אוטומטי.</li>
+          <li><strong>Ctrl + A:</strong> פותח את חלון העזרה.</li>
+          <li><strong>Ctrl + T:</strong> גולל את העמוד ישירות לטבלת התורמים, שבה ניתן לראות ולנהל את רשימת התורמים.</li>
+          <li><strong>Ctrl + R:</strong> גולל את העמוד ישירות לטבלת הסיירות, שבה ניתן לראות ולנהל את הסיירות הקיימות.</li>
+          <li><strong>Ctrl + G:</strong> גולל את העמוד ישירות לסעיף הסטטיסטיקות, הכולל כרטיסי סטטיסטיקה, טבלאות סיכום וגרפים.</li>
+          <li><strong>Ctrl + Q:</strong> מפעיל את כפתור היציאה, שמנתק את המשתמש מהמערכת.</li>
+          <li><strong>Escape:</strong> סוגר כל חלון מודלי שפתוח כרגע (למשל, הגדרות, הוספת תורם, עזרה וכו').</li>
+          <li><strong>Arrow Up / Arrow Down:</strong> כאשר המיקוד נמצא בטבלה (תורמים או סיירות), מקשי החצים למעלה ולמטה מזיזים את המיקוד בין השורות.</li>
+          <li><strong>Arrow Left / Arrow Right:</strong> כאשר המיקוד נמצא בטבלה, מקשי החצים שמאלה וימינה מזיזים את המיקוד בין כפתורי הפעולות (עריכה, מחיקה, מיקום, שיחה) באותה שורה.</li>
+        </ul>
+        <p><strong>טיפ:</strong> השתמש בקיצורי המקשים כדי לחסוך זמן ולשפר את זרימת העבודה. <strong>אזהרה:</strong> ודא שאינך נמצא בשדה טקסט בעת שימוש בקיצורי מקשים כדי למנוע התנגשויות.</p>
+      </div>
+      <!-- טיפים ואזהרות כלליים -->
+      <div class="help-subsection">
+        <h4 class="help-subsection-title"><i class="fas fa-lightbulb"></i> טיפים ואזהרות</h4>
+        <ul>
+          <li><i class="fas fa-check"></i> ודא שכל הכתובות תקינות לפני יצירת מסלולים (כולל מספר הרחוב), כתובת שגויה עלולה לשבש את המסלול.</li>
+          <li><i class="fas fa-exclamation-triangle"></i> בצע גיבוי לפני ייבוא/ייצוא או איפוס נתונים, פעולת האיפוס אינה ניתנת לשחזור!</li>
+          <li><i class="fas fa-check"></i> ודא את תקינות הקובץ לפני ייבוא נתונים למערכת כדי למנוע שגיאות בעת ייבוא הנתונים.</li>
+          <li><i class="fas fa-edit"></i> בעריכה מרובה, בדוק את השדות המשותפים לפני שמירה כדי למנוע שינויים לא רצויים.</li>
+          <li><i class="fas fa-trash"></i> מחיקת תורמים או סיירות היא סופית יש לשמור עותק של הנתונים אם יש ספק.</li>
+          <li><i class="fas fa-eye"></i> השתמש במצב כהה לתנאי תאורה נמוכים, ובמצב בהיר לראות טובה יותר ביום.</li>
+        </ul>
+      </div>
+      <p style="text-align: center; margin-top: 20px; font-size: 0.9em;">
+        <a href="https://mail.google.com/mail/u/0/?to=y.ch.yechezkel@gmail.com&su=%D7%91%D7%A7%D7%A9%D7%AA+%D7%AA%D7%9E%D7%99%D7%9B%D7%94+-+%D7%AA%22%D7%AA+Organizer&body=%D7%A9%D7%9C%D7%95%D7%9D%20%D7%A8%D7%91%2C%0A%0A%D7%90%D7%A0%D7%99%20%D7%A4%D7%95%D7%A0%D7%94%20%D7%90%D7%9C%D7%99%D7%9B%D7%9D%20%D7%91%D7%91%D7%A7%D7%A9%D7%94%20%D7%9C%D7%A7%D7%91%D7%9C%D7%AA%20%D7%AA%D7%9E%D7%99%D7%9B%D7%94%20%D7%A2%D7%91%D7%95%D7%A8%20%D7%9E%D7%A2%D7%A8%D7%9B%D7%AA%20%D7%AA%22%D7%AA%20Organizer.%0A%0A%D7%A4%D7%A8%D7%98%D7%99%20%D7%94%D7%91%D7%A7%D7%A9%D7%94%3A%0A%0A%D7%AA%D7%95%D7%93%D7%94%20%D7%9E%D7%A8%D7%90%D7%A9%2C%0A%5B%D7%A9%D7%9D%20%D7%95%D7%A7%D7%95%D7%93%20%D7%9E%D7%95%D7%A1%D7%93%5D&tf=cm" target="_blank">יצירת קשר לתמיכה</a>
+      </p>
+      <p style="text-align: center; margin-top: 20px; font-size: 0.9em;">© כל הזכויות שמורות | יוסף חי יחזקאל</p>
+    </div>
+  </div>
+</div>
+
+    <!-- מודל אודות -->
+    <div id="aboutModal" class="modal" role="dialog" aria-labelledby="aboutModalTitle">
+      <div class="modal-content help-modal-content">
+        <span class="close" id="closeAboutModal" tabindex="0" role="button" aria-label="סגור חלון">×</span>
+        <h3 class="help-title" id="aboutModalTitle"><i class="fas fa-info-circle"></i> אודות המערכת</h3>
+        <div class="help-section">
+          <div class="help-subsection">
+            <h4 class="help-subsection-title">גרסת המערכת</h4>
+            <p>3.8.0</p>
+          </div>
+          <div class="help-subsection">
+            <h4 class="help-subsection-title">תנאי הרישיון</h4>
+            <p>ברוכים הבאים לתוכנת "ת"ת Organizer", התוכנה פותחה על ידי יוסף חי יחזקאל (להלן: "המפתח"). הסכם זה מסדיר את השימוש בתוכנה.</p>
+            <ol>
+              <li><strong>רישיון שימוש</strong><br>המפתח מעניק למוסד שרכש את התוכנה רישיון מוגבל, בלתי בלעדי ובלתי ניתן להעברה לשימוש פנימי בלבד.</li>
+              <li><strong>מגבלות שימוש</strong><br>אסור להשתמש בתוכנה למטרות מסחריות, לשנותה, להפיצה, או לנסות לפענח את קוד המקור שלה.</li>
+              <li><strong>אחריות ונתונים</strong><br>התוכנה מסופקת "כמות שהיא", המפתח אינו אחראי לנזקים או לאובדן נתונים.</li>
+              <li><strong>קניין רוחני</strong><br>כל זכויות הקניין הרוחני בתוכנה שמורות למפתח.</li>
+              <li><strong>סודיות והגנת מידע</strong><br>המוסד אחראי לשמור על סודיות פרטי הכניסה ולנהל נתונים אישיים לפי החוק.</li>
+              <li><strong>סיום רישיון</strong><br>הפרת תנאים תבטל את הרישיון.</li>
+              <li><strong>דין וסמכות שיפוט</strong><br>הסכם זה כפוף לדיני ישראל.</li>
+              <li><strong>כללי</strong><br>הסכמה לתנאים היא התחייבות מחייבת לפי ההלכה והחוק.</li>
+            </ol>
+          </div>
+          <div class="help-subsection">
+            <h4 class="help-subsection-title">זכויות יוצרים</h4>
+            <p><i class="fa-regular fa-copyright fa-beat"></i> כל הזכויות שמורות ליוסף חי יחזקאל.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- מודל בדיקת כתובות -->
+    <div id="addressCheckModal" class="modal" role="dialog" aria-labelledby="addressCheckTitle">
+      <div class="modal-content">
+        <span class="close" id="closeAddressCheckModal" tabindex="0" role="button" aria-label="סגור חלון">×</span>
+        <h3 id="addressCheckTitle">תוצאות בדיקת כתובות</h3>
+        <p id="addressCheckSummary"></p>
+        <div id="invalidAddressesList"></div>
+      </div>
+    </div>
+
+    <!-- מודל תיקון כתובת -->
+    <div id="fixAddressModal" class="modal" role="dialog" aria-labelledby="fixAddressModalTitle">
+      <div class="modal-content">
+        <span class="close" id="closeFixAddressModal" tabindex="0" role="button" aria-label="סגור חלון">×</span>
+        <h3 id="fixAddressModalTitle">תקן כתובת</h3>
+        <form id="fixAddressForm">
+          <input type="hidden" id="fixDonorId">
+          <label for="fixCity">עיר:</label>
+          <input type="text" id="fixCity" required tabindex="0">
+          <label for="fixStreet">רחוב:</label>
+          <input type="text" id="fixStreet" required tabindex="0">
+          <label for="fixStreetNumber">מספר רחוב:</label>
+          <input type="text" id="fixStreetNumber" required tabindex="0">
+          <button type="button" id="selectFromMapBtn" tabindex="0"><i class="fas fa-map"></i> בחר מהמפה</button>
+          <button type="submit" tabindex="0"><i class="fas fa-save"></i> שמור</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- קבצי ייבוא וסרגלי התקדמות -->
+    <input type="file" id="importDonorsFile" accept=".csv" style="display:none;">
+    <input type="file" id="importCampaignsFile" accept=".csv" style="display:none;">
+    <input type="file" id="importAllFile" accept=".json" style="display:none;">
+
+    <div id="progressBar" style="display:none;">
+      <p>בודק כתובות... <span id="progressPercentage">0%</span></p>
+      <p id="progressDetails">נבדקו: 0, נותרו: 0</p>
+      <progress id="progress" value="0" max="100"></progress>
+      <button id="cancelCheckBtn" tabindex="0">בטל</button>
+    </div>
+    <div id="importProgress" style="display:none;">
+      <p>מייבא נתונים... <span id="importPercentage">0%</span></p>
+      <progress id="importProgressBar" value="0" max="100"></progress>
+    </div>
+  </div>
+</body>
+
+    <!-- מודל תוצאות בדיקת כתובות -->
+    <div id="addressCheckModal" class="modal" role="dialog" aria-labelledby="addressCheckTitle">
+      <div class="modal-content">
+        <span class="close" id="closeAddressCheckModal" tabindex="0" role="button" aria-label="סגור חלון">×</span>
+        <h3 id="addressCheckTitle">תוצאות בדיקת כתובות</h3>
+        <p id="addressCheckSummary"></p>
+        <div id="invalidAddressesList"></div>
+      </div>
+    </div>
+
+    <!-- מודל תיקון כתובת -->
+    <div id="fixAddressModal" class="modal" role="dialog" aria-labelledby="fixAddressModalTitle">
+      <div class="modal-content">
+        <span class="close" id="closeFixAddressModal" tabindex="0" role="button" aria-label="סגור חלון">×</span>
+        <h3 id="fixAddressModalTitle">תקן כתובת</h3>
+        <form id="fixAddressForm">
+          <input type="hidden" id="fixDonorId">
+          <label for="fixCity">עיר:</label>
+          <input type="text" id="fixCity" required tabindex="0">
+          <label for="fixStreet">רחוב:</label>
+          <input type="text" id="fixStreet" required tabindex="0">
+          <label for="fixStreetNumber">מספר רחוב:</label>
+          <input type="text" id="fixStreetNumber" required tabindex="0">
+          <button type="button" id="selectFromMapBtn" tabindex="0"><i class="fas fa-map"></i> בחר מהמפה</button>
+          <button type="submit" tabindex="0"><i class="fas fa-save"></i> שמור</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- שדות קלט לייבוא קבצים -->
+    <input type="file" id="importDonorsFile" accept=".csv" style="display:none;">
+    <input type="file" id="importCampaignsFile" accept=".csv" style="display:none;">
+    <input type="file" id="importAllFile" accept=".json" style="display:none;">
+
+    <!-- סרגל התקדמות לבדיקת כתובות -->
+    <div id="progressBar" style="display:none;">
+      <p>בודק כתובות... <span id="progressPercentage">0%</span></p>
+      <p id="progressDetails">נבדקו: 0, נותרו: 0</p>
+      <progress id="progress" value="0" max="100"></progress>
+      <button id="cancelCheckBtn" tabindex="0">בטל</button>
+    </div>
+
+    <!-- סרגל התקדמות לייבוא נתונים -->
+    <div id="importProgress" style="display:none;">
+      <p>מייבא נתונים... <span id="importPercentage">0%</span></p>
+      <progress id="importProgressBar" value="0" max="100"></progress>
+    </div>
+  </div>
+
+<div id="purchaseMessage" class="modal" role="dialog" aria-labelledby="purchaseTitle">
+  <div class="modal-content">
+    <span class="close" id="closePurchaseModal" tabindex="0" role="button" aria-label="סגור חלון">×</span>
+    <h3 id="purchaseTitle">תכונה זו זמינה רק לאחר רכישת המערכת!</h3>
+    <p>רכוש עכשיו את המערכת וקבל גישה מלאה לכל היכולות המתקדמות!</p>
+    <a href="https://mail.google.com/mail/u/0/?to=y.ch.yechezkel@gmail.com&su=%D7%91%D7%A7%D7%A9%D7%AA+%D7%9E%D7%99%D7%93%D7%A2+-+%D7%9E%D7%A2%D7%A8%D7%9B%D7%AA+%D7%A0%D7%99%D7%94%D7%95%D7%9C+%D7%AA%D7%95%D7%A8%D7%9E%D7%99%D7%9D+%D7%90%D7%95%D7%98%D7%95%D7%9E%D7%98%D7%99%D7%AA&body=%D7%A9%D7%9C%D7%95%D7%9D+%D7%A8%D7%91,%0A%0A%D7%90%D7%A0%D7%99+%D7%A4%D7%95%D7%A0%D7%94+%D7%90%D7%9C%D7%99%D7%9B%D7%9D+%D7%91%D7%91%D7%A7%D7%A9%D7%94+%D7%9C%D7%A7%D7%91%D7%9C%D7%AA+%D7%9E%D7%99%D7%93%D7%A2+%D7%90%D7%95%D7%93%D7%95%D7%AA+%D7%A8%D7%9B%D7%99%D7%A9%D7%AA+%D7%9E%D7%A2%D7%A8%D7%9B%D7%AA+%D7%A0%D7%99%D7%94%D7%95%D7%9C+%D7%AA%D7%95%D7%A8%D7%9E%D7%99%D7%9D.%0A%20%0A%D7%AA%D7%95%D7%93%D7%94+%D7%9E%D7%A8%D7%90%D7%A9,%0A%5B%D7%A9%D7%9D+%D7%9E%D7%9C%D7%90%5D&tf=cm=cm" target="_blank" class="purchase-button"><i class="fas fa-shopping-cart"></i>  רכוש עכשיו</a>
+  </div>
+</div>
+  <script src="script.js"></script>
+</body>
+</html>

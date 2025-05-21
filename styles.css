@@ -1,0 +1,880 @@
+/* משתני CSS לשמירה על עקביות וקלות תחזוקה */
+:root {
+  --bg-color: #f5f7fa; /* צבע רקע בהיר לדף */
+  --text-color: #1a2b49; /* צבע טקסט כהה */
+  --table-bg: #ffffff; /* צבע רקע לטבלאות */
+  --header-bg: #e9ecef; /* צבע רקע לכותרות טבלה */
+  --btn-bg: #0084ff; /* צבע רקע לכפתורים */
+  --btn-hover-bg: #357abd; /* צבע רקע לכפתורים במצב hover */
+  --btn-text: #ffffff; /* צבע טקסט לכפתורים */
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.05); /* צל עדין לרכיבים */
+  --checkbox-bg: #f1f1f1; /* צבע רקע לתיבות סימון */
+  --checkbox-hover-bg: #e0e0e0; /* צבע רקע לתיבות סימון ב-hover */
+  --help-bg: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%); /* גרדיאנט לרקע מודל העזרה */
+  --help-text-color: #34495e; /* צבע טקסט במודל העזרה */
+  --help-title-color: #2c3e50; /* צבע כותרת במודל העזרה */
+  --help-subsection-bg: #ffffff; /* צבע רקע לתת-סעיפים במודל העזרה */
+  --help-subsection-title-color: #2980b9; /* צבע כותרת תת-סעיפים במודל העזרה */
+  --modal-bg: #ffffff; /* צבע רקע למודלים */
+  --modal-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); /* צל למודלים */
+  --transition-speed: 0.3s; /* מהירות מעברים ואנימציות */
+  --turquoise-color: rgba(80, 175, 245, 0.2); /* צבע טורקיז שקוף לאפקטים */
+}
+
+/* סגנונות גלובליים לדף */
+body {
+  background-color: var(--bg-color); /* צבע רקע לדף */
+  color: var(--text-color); /* צבע טקסט כללי */
+  font-family: "Rubik", "Assistant", sans-serif; /* גופנים עבריים */
+  font-size: 1.1em; /* גודל טקסט בסיסי */
+  font-weight: 400; /* משקל גופן רגיל */
+  margin: 0; /* הסרת מרווחים חיצוניים */
+  padding: 30px; /* מרווח פנימי סביב התוכן */
+  padding-top: 80px; /* מרווח נוסף ל-header קבוע */
+  transition: all var(--transition-speed) ease; /* מעבר חלק לשינויי צבעים */
+  direction: rtl; /* כיוון טקסט מימין לשמאל */
+}
+
+/* סגנונות לכותרות */
+h1, h2, h3 {
+  text-align: center; /* מרכוז טקסט */
+  margin: 10px 0; /* מרווח אנכי */
+  font-weight: 600; /* משקל גופן מודגש */
+}
+
+h1 {
+  font-size: 2.5em; /* גודל גדול לכותרת ראשית */
+}
+
+h2 {
+  font-size: 1.8em; /* גודל בינוני לכותרת משנית */
+  margin-top: 30px; /* מרווח עליון נוסף */
+}
+
+/* סגנונות ל-header העליון */
+.header {
+  display: grid; /* פריסה בטבלה */
+  grid-template-columns: auto 1fr auto; /* עמודות: לוגו, כותרת, כפתורים */
+  align-items: center; /* יישור אנכי למרכז */
+  flex-wrap: wrap; /* גלישה בשורות במידת הצורך */
+  gap: 15px; /* מרווח בין רכיבים */
+  margin-bottom: 15px; /* מרווח תחתון */
+  position: fixed; /* קבוע בראש הדף */
+  top: 0; left: 0; right: 0; /* מיקום מלא בראש */
+  background: rgba(245, 247, 250, 0.95); /* רקע שקוף מעט */
+  backdrop-filter: blur(10px); /* אפקט טשטוש לרקע */
+  z-index: 1000; /* שכבה עליונה */
+  padding: 17px 17px; /* מרווח פנימי */
+  box-shadow: var(--shadow); /* צל עדין */
+}
+
+/* סגנונות ללוגו */
+.logo {
+  width: 60px; /* רוחב קבוע */
+  height: auto; /* גובה מותאם */
+  margin-left: 10px; /* מרווח שמאלי */
+}
+
+/* סגנונות לכותרת הראשית */
+#mainTitle {
+  font-size: 2.5em; /* גודל גדול */
+  padding: 2px; /* מרווח פנימי קל */
+  margin: 0; /* הסרת מרווחים חיצוניים */
+}
+
+/* סגנונות לכפתורים נוספים ב-header */
+.extra-buttons {
+  display: flex; /* פריסה גמישה */
+  gap: 15px; /* מרווח בין כפתורים */
+  flex-wrap: wrap; /* גלישה במידת הצורך */
+  justify-content: flex-end; /* יישור לימין */
+}
+
+/* סגנונות כלליים לכפתורים */
+button {
+  background-color: var(--btn-bg); /* צבע רקע */
+  color: var(--btn-text); /* צבע טקסט */
+  padding: 12px 20px; /* מרווח פנימי */
+  border: none; /* ללא גבול */
+  border-radius: 8px; /* פינות מעוגלות */
+  cursor: pointer; /* סמן יד */
+  box-shadow: var(--shadow); /* צל עדין */
+  transition: all var(--transition-speed) ease; /* מעבר חלק */
+  white-space: nowrap; /* טקסט בשורה אחת */
+  position: relative; /* מיקום יחסי לאפקטים */
+  overflow: hidden; /* הסתרת תוכן חורג */
+  z-index: 1; /* שכבה מעל אפקטים */
+}
+
+/* אפקט hover לכפתורים - שכבה פנימית */
+button::before {
+  content: ''; /* תוכן ריק */
+  position: absolute; /* מיקום מוחלט */
+  top: 0; left: 50%; /* התחלה במרכז */
+  width: 0; height: 100%; /* רוחב אפס בתחילה */
+  background: var(--turquoise-color); /* צבע אפקט */
+  transform: translateX(-50%) scaleX(0); /* מיקום והתחלה מקופלת */
+  transform-origin: center; /* נקודת מוצא לסקייל */
+  transition: transform var(--transition-speed) ease-in-out; /* מעבר חלק */
+  z-index: -1; /* מאחורי הטקסט */
+}
+
+button:hover::before {
+  width: 100%; /* התרחבות מלאה */
+  transform: translateX(-50%) scaleX(1); /* פרישה מלאה */
+}
+
+button:hover {
+  background-color: var(--btn-hover-bg); /* שינוי צבע רקע */
+  transform: translateY(-3px); /* הרמה קלה */
+}
+
+button:active {
+  transform: scale(0.98) translateY(-3px); /* הקטנה קלה בלחיצה */
+}
+
+/* הצגת כותרת הכפתור ב-hover */
+button:hover::after {
+  content: attr(title); /* שימוש בערך ה-title */
+  position: absolute; /* מיקום מוחלט */
+  bottom: 100%; left: 50%; /* מעל הכפתור */
+  transform: translateX(-50%); /* מרכוז אופקי */
+  background: #333; /* צבע רקע כהה */
+  color: #fff; /* צבע טקסט לבן */
+  padding: 5px 10px; /* מרווח פנימי */
+  border-radius: 4px; /* פינות מעוגלות */
+  font-size: 0.9em; /* גודל טקסט קטן יותר */
+  white-space: nowrap; /* טקסט בשורה אחת */
+}
+
+/* סגנונות לאייקונים בכפתורים */
+button i {
+  margin-left: 5px; /* מרווח שמאלי מהטקסט */
+}
+
+/* סגנונות לטבלאות */
+.table-container {
+  margin: 30px 0; /* מרווח אנכי */
+  overflow-x: auto; /* גלילה אופקית במידת הצורך */
+  border-radius: 12px; /* פינות מעוגלות */
+  overflow: hidden; /* הסתרת תוכן חורג */
+  box-shadow: var(--shadow); /* צל עדין */
+  position: relative; /* מיקום יחסי לקיבוע */
+  background-color: var(--table-bg); /* צבע רקע */
+}
+
+table {
+  width: 100%; /* רוחב מלא */
+  border-collapse: collapse; /* הסרת מרווחים בין תאים */
+  background-color: var(--table-bg); /* צבע רקע */
+}
+
+th, td {
+  border: 1px solid #ddd; /* גבול דק */
+  padding: 4px; /* מרווח פנימי */
+  text-align: center; /* מרכוז טקסט */
+  white-space: normal; /* גלישת טקסט */
+  line-height: 1.5; /* גובה שורה */
+}
+
+td {
+  max-width: 150px; /* רוחב מקסימלי */
+  overflow: hidden; /* הסתרת תוכן חורג */
+  text-overflow: ellipsis; /* שלוש נקודות בחריגה */
+  white-space: nowrap; /* טקסט בשורה אחת */
+}
+
+td.actions {
+  white-space: nowrap; /* שמירה על כפתורים בשורה */
+  overflow: visible; /* הצגת כפתורים חורגים */
+}
+
+/* סגנונות לכותרות טבלה */
+th {
+  background-color: var(--header-bg); /* צבע רקע */
+  cursor: pointer; /* סמן יד למיון */
+  position: sticky; /* קיבוע בראש */
+  top: 0; /* מיקום עליון */
+  z-index: 10; /* שכבה מעל התאים */
+  white-space: normal; /* גלישת טקסט */
+  transition: background-color var(--transition-speed); /* מעבר חלק */
+  font-weight: 600; /* משקל גופן מודגש */
+}
+
+th:hover {
+  background-color: var(--btn-bg); /* צבע רקע ב-hover */
+  color: var(--btn-text); /* צבע טקסט לבן */
+}
+
+/* אפקט hover לשורות טבלה */
+table tr:hover {
+  background: rgba(74, 144, 226, 0.1); /* צבע רקע שקוף */
+  transition: background var(--transition-speed) ease; /* מעבר חלק */
+}
+
+/* התאמת רוחב עמודות בטבלת תורמים */
+#donorTable th:nth-child(2), #donorTable td:nth-child(2),
+#donorTable th:nth-child(3), #donorTable td:nth-child(3),
+#donorTable th:nth-child(4), #donorTable td:nth-child(4),
+#donorTable th:nth-child(4), #donorTable td:nth-child(6),
+#donorTable th:nth-child(6), #donorTable td:nth-child(8),
+#donorTable th:nth-child(9), #donorTable td:nth-child(9),
+#donorTable th:nth-child(10), #donorTable td:nth-child(10),
+#donorTable th:nth-child(11), #donorTable td:nth-child(11),
+#donorTable th:nth-child(12), #donorTable td:nth-child(12) {
+  max-width: 87px; /* רוחב מקסימלי */
+  width: 85px; /* רוחב קבוע */
+  overflow: hidden; /* הסתרת תוכן חורג */
+  text-overflow: ellipsis; /* שלוש נקודות */
+  white-space: nowrap; /* טקסט בשורה אחת */
+}
+
+#donorTable th:nth-child(5), #donorTable td:nth-child(5),
+#donorTable th:nth-child(12), #donorTable td:nth-child(7) {
+  max-width: 125px; /* רוחב מקסימלי גדול יותר */
+  width: 90px; /* רוחב קבוע */
+  overflow: hidden; /* הסתרת תוכן חורג */
+  text-overflow: ellipsis; /* שלוש נקודות */
+  white-space: nowrap; /* טקסט בשורה אחת */
+}
+
+/* התאמת רוחב עמודות בטבלת סיירות */
+#campaignTable th:nth-child(1), #campaignTable td:nth-child(1) {
+  max-width: 270px; /* רוחב מקסימלי */
+  width: 250px; /* רוחב קבוע */
+  overflow: hidden; /* הסתרת תוכן חורג */
+  text-overflow: ellipsis; /* שלוש נקודות */
+  white-space: nowrap; /* טקסט בשורה אחת */
+}
+
+#campaignTable th:nth-child(2), #campaignTable td:nth-child(2) {
+  max-width: 100px; /* רוחב מקסימלי */
+  width: 100px; /* רוחב קבוע */
+  overflow: hidden; /* הסתרת תוכן חורג */
+  text-overflow: ellipsis; /* שלוש נקודות */
+  white-space: nowrap; /* טקסט בשורה אחת */
+}
+
+#campaignTable th:nth-child(4), #campaignTable td:nth-child(4) {
+  max-width: 410px; /* רוחב מקסימלי */
+  width: 350px; /* רוחב קבוע */
+  overflow: hidden; /* הסתרת תוכן חורג */
+  text-overflow: ellipsis; /* שלוש נקודות */
+  white-space: nowrap; /* טקסט בשורה אחת */
+}
+
+/* התאמת רוחב עמודות בטבלת סיכום סיירות */
+#campaignSummaryTable td:nth-child(2),
+#campaignSummaryTable td:nth-child(3),
+#campaignSummaryTable td:nth-child(4) {
+  width: 150px; /* רוחב קבוע */
+  max-width: 150px; /* רוחב מקסימלי */
+  overflow: hidden; /* הסתרת תוכן חורג */
+  text-overflow: ellipsis; /* שלוש נקודות */
+  white-space: nowrap; /* טקסט בשורה אחת */
+}
+
+/* קיבוע העמודה הראשונה בטבלאות */
+table td:first-child, table th:first-child {
+  position: sticky; /* קיבוע במיקום */
+  left: 0; /* מיקום שמאלי */
+  z-index: 11; /* שכבה מעל תאים אחרים */
+}
+
+/* סגנונות לשדות קלט */
+input, select, textarea {
+  width: 100%; /* רוחב מלא */
+  padding: 12px; /* מרווח פנימי */
+  margin: 8px 0; /* מרווח אנכי */
+  border: 1px solid #ccc; /* גבול דק */
+  border-radius: 5px; /* פינות מעוגלות */
+  box-sizing: border-box; /* חישוב רוחב כולל גבול */
+  transition: border-color var(--transition-speed); /* מעבר חלק לגבול */
+  font-size: 1em; /* גודל טקסט */
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--btn-bg); /* צבע גבול ב-focus */
+}
+
+/* סגנונות כלליים למודלים */
+.modal {
+  display: none; /* מוסתר כברירת מחדל */
+  position: fixed; /* מיקום קבוע */
+  z-index: 1000; /* שכבה עליונה */
+  left: 0; top: 0; /* מיקום מלא */
+  width: 100%; height: 100%; /* גודל מלא */
+  background-color: rgba(0, 0, 0, 0.6); /* רקע שקוף כהה */
+  overflow-y: auto; /* גלילה אנכית במידת הצורך */
+  animation: fadeIn var(--transition-speed); /* אנימציית כניסה */
+}
+
+/* סגנונות ספציפיים למודל מפה */
+#mapModal {
+  z-index: 1001; /* שכבה גבוהה יותר */
+}
+
+/* סגנונות כלליים למודלים (ברירת מחדל) */
+.modal-content {
+  background-color: var(--modal-bg); /* צבע רקע */
+  margin: 5% auto; /* מרכוז אנכי ואופקי */
+  padding: 30px; /* מרווח פנימי */
+  border-radius: 20px; /* פינות מעוגלות */
+  width: 90%; max-width: 700px; /* רוחב מקסימלי */
+  box-shadow: var(--modal-shadow); /* צל */
+  position: relative; /* מיקום יחסי */
+  animation: modalIn var(--transition-speed); /* אנימציית כניסה */
+  max-height: 75vh; /* גובה מקסימלי - 75% מגובה החלון */
+  overflow-y: auto; /* פס גלילה אנכי כאשר התוכן חורג */
+}
+
+/* סגנונות לפס הגלילה */
+.modal-content::-webkit-scrollbar {
+  width: 10px; /* רוחב פס הגלילה */
+}
+.modal-content::-webkit-scrollbar-track {
+  background: #ffffff; /* צבע הרקע של המסילה */
+  border-radius: 5px; /* פינות מעוגלות */
+}
+.modal-content::-webkit-scrollbar-thumb {
+  background: #87CEEB; /* צבע תכלת לפס הגלילה */
+  border-radius: 5px; /* פינות מעוגלות */
+}
+.modal-content::-webkit-scrollbar-thumb:hover {
+  background: #00BFFF; /* צבע תכלת כהה יותר בזמן ריחוף */
+}
+
+/* סגנונות למודל הגרף */
+#chartModal .modal-content {
+  width: 90%; max-width: 1200px; /* רוחב גדול יותר */
+  height: 80vh; /* גובה מותאם */
+}
+
+#chartModalCanvas {
+  width: 100% !important; /* רוחב מלא */
+  height: 100% !important; /* גובה מלא */
+}
+
+/* סגנונות לכפתור סגירה במודלים */
+.close {
+  position: absolute; /* מיקום מוחלט */
+  top: 10px; right: 10px; /* מיקום בפינה */
+  font-size: 30px; /* גודל גדול */
+  cursor: pointer; /* סמן יד */
+  transition: background-color var(--transition-speed); /* מעבר חלק */
+  width: 40px; height: 40px; /* גודל קבוע */
+  display: flex; /* פריסה גמישה */
+  align-items: center; justify-content: center; /* מרכוז */
+  border-radius: 50%; /* צורה עגולה */
+  background-color: rgba(0, 0, 0, 0.15); /* רקע שקוף מעט */
+  z-index: 1001; /* שכבה עליונה */
+}
+
+.close:hover {
+  background-color: var(--btn-hover-bg); /* צבע רקע ב-hover */
+  color: var(--btn-text); /* צבע טקסט לבן */
+}
+
+/* סגנונות לחיפוש */
+.search-container {
+  display: flex; /* פריסה גמישה */
+  flex-wrap: wrap; /* גלישה במידת הצורך */
+  gap: 15px; /* מרווח בין רכיבים */
+  justify-content: center; /* מרכוז אופקי */
+  margin: 15px 0; /* מרווח אנכי */
+}
+
+.search-container input, .search-container select {
+  max-width: 170px; /* רוחב מקסימלי */
+}
+
+/* סגנונות לכפתורי פעולה */
+.action-buttons {
+  display: flex; /* פריסה גמישה */
+  justify-content: center; /* מרכוז אופקי */
+  gap: 20px; /* מרווח בין כפתורים */
+  margin-top: 15px; /* מרווח עליון */
+}
+
+/* סגנונות לתיבות סימון */
+.checkbox-container {
+  max-height: 300px; /* גובה מקסימלי */
+  overflow-y: auto; /* גלילה אנכית */
+  border: 1px solid #ddd; /* גבול דק */
+  padding: 3px; /* מרווח פנימי */
+  border-radius: 5px; /* פינות מעוגלות */
+  background-color: var(--checkbox-bg); /* צבע רקע */
+}
+
+.checkbox-container label {
+  display: flex; /* פריסה גמישה */
+  align-items: center; /* יישור אנכי */
+  padding: 5px; /* מרווח פנימי */
+  border-radius: 5px; /* פינות מעוגלות */
+  transition: background var(--transition-speed); /* מעבר חלק */
+}
+
+.checkbox-container label:hover {
+  background: var(--checkbox-hover-bg); /* צבע רקע ב-hover */
+}
+
+/* סגנונות לגרפים */
+.graphs {
+  display: flex; /* פריסה גמישה */
+  flex-wrap: wrap; /* גלישה במידת הצורך */
+  gap: 20px; /* מרווח בין גרפים */
+  justify-content: center; /* מרכוז אופקי */
+  margin-top: 40px; /* מרווח עליון */
+}
+
+.graph {
+  width: 30%; /* רוחב יחסי */
+  min-width: 300px; /* רוחב מינימלי */
+  background-color: var(--table-bg); /* צבע רקע */
+  padding: 15px; /* מרווח פנימי */
+  border-radius: 12px; /* פינות מעוגלות */
+  box-shadow: var(--shadow); /* צל עדין */
+  position: relative; /* מיקום יחסי */
+  transition: transform var(--transition-speed); /* מעבר חלק */
+}
+
+/* סגנונות לכפתורי הגדלה וייצוא בגרפים */
+.enlarge-btn, .export-chart-btn {
+  position: absolute; /* מיקום מוחלט */
+  top: 10px; /* מיקום עליון */
+  padding: 5px; /* מרווח פנימי */
+  font-size: 14px; /* גודל טקסט */
+  background-color: var(--btn-bg); /* צבע רקע */
+  color: var(--btn-text); /* צבע טקסט */
+  border-color: var(--btn-bg); /* צבע גבול ב-focus */
+  border-radius: 5px; /* פינות מעוגלות */
+  cursor: pointer; /* סמן יד */
+}
+
+.enlarge-btn {
+  right: 10px; /* מיקום ימני */
+}
+
+.export-chart-btn {
+  right: 50px; /* מיקום משמאל לכפתור הגדלה */
+}
+
+.enlarge-btn:hover, .export-chart-btn:hover {
+  background-color: var(--btn-hover-bg); /* צבע רקע ב-hover */
+}
+
+/* אנימציות */
+@keyframes fadeIn {
+  from { opacity: 0; } /* התחלה שקופה */
+  to { opacity: 1; } /* סיום אטום */
+}
+
+@keyframes modalIn {
+  from { transform: scale(0.95); opacity: 0; } /* התחלה קטנה ושקופה */
+  to { transform: scale(1); opacity: 1; } /* סיום בגודל מלא ואטום */
+}
+
+/* סגנונות לכרטיסי סטטיסטיקה */
+.stats-cards {
+  display: grid; /* פריסה בטבלה */
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* עמודות דינמיות */
+  gap: 20px; /* מרווח בין כרטיסים */
+  justify-content: center; /* מרכוז אופקי */
+  margin-top: 20px; margin-bottom: 50px; /* מרווח אנכי */
+  overflow-x: auto; /* גלילה אופקית */
+}
+
+.stat-card {
+  background: rgba(255, 255, 255, 0.8); /* צבע רקע שקוף מעט */
+  padding: 20px; /* מרווח פנימי */
+  border-radius: 15px; /* פינות מעוגלות */
+  box-shadow: var(--shadow); /* צל עדין */
+  text-align: center; /* מרכוז טקסט */
+  min-width: 150px; /* רוחב מינימלי */
+  flex: 1; /* גמישות ברוחב */
+  transition: transform var(--transition-speed); /* מעבר חלק */
+  border: 1px solid #e0e0e0; /* גבול דק */
+}
+
+.stat-card i {
+  font-size: 2em; /* גודל אייקון */
+  margin-bottom: 10px; /* מרווח תחתון */
+}
+
+.stat-card h4 {
+  margin: 10px 0; /* מרווח אנכי */
+  font-size: 1.1em; /* גודל טקסט */
+}
+
+.stat-card p {
+  font-size: 1.6em; /* גודל טקסט גדול */
+  font-weight: bold; /* טקסט מודגש */
+}
+
+/* סגנונות לטבלאות סיכום */
+.summary-tables {
+  display: flex; /* פריסה גמישה */
+  flex-direction: row; /* כיוון אופקי */
+  gap: 20px; /* מרווח בין טבלאות */
+  justify-content: center; /* מרכוז אופקי */
+}
+
+.summary-table-container {
+  flex: 1; /* גמישות ברוחב */
+  min-width: 300px; /* רוחב מינימלי */
+}
+
+.summary-header {
+  display: flex; /* פריסה גמישה */
+  justify-content: space-between; /* חלוקה שווה */
+  align-items: center; /* יישור אנכי */
+}
+
+.summary-header h3 {
+  margin: 0; /* הסרת מרווחים */
+}
+
+.stats-title {
+  text-align: center; /* מרכוז טקסט */
+  font-size: 1.8em; /* גודל טקסט */
+  margin-top: 40px; /* מרווח עליון */
+}
+
+/* סגנונות לכפתורי קפיצה */
+.jump-buttons {
+  display: flex; /* פריסה גמישה */
+  gap: 10px; /* מרווח בין כפתורים */
+  justify-content: center; /* מרכוז אופקי */
+  margin-bottom: 20px; /* מרווח תחתון */
+}
+
+.jump-buttons button {
+  padding: 10px 10px; /* מרווח פנימי */
+  font-size: 1em; /* גודל טקסט */
+}
+
+/* סגנונות לכפתורי הגדרות */
+.settings-buttons {
+  display: grid; /* פריסה גמישה */
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* תצוגת רשת */
+  flex-wrap: wrap; /* גלישה במידת הצורך */
+  justify-content: center; /* מרכוז אופקי */
+  gap: 20px; /* מרווח בין כפתורים */
+  margin-top: 20px; /* מרווח עליון */
+}
+
+.settings-buttons button {
+  width: 100%;
+  padding: 10px;
+  font-size: 1em;
+}
+
+/* סגנונות למודל עזרה */
+.help-modal-content {
+  background: var(--help-bg); /* צבע רקע */
+  color: var(--help-text-color); /* צבע טקסט */
+  padding: 30px; /* מרווח פנימי */
+  border-radius: 16px; /* פינות מעוגלות */
+  max-width: 900px; /* רוחב מקסימלי */
+  position: relative; /* מיקום יחסי */
+}
+
+.help-title {
+  color: var(--help-title-color); /* צבע כותרת */
+  font-size: 2em; /* גודל טקסט */
+  margin-bottom: 20px; /* מרווח תחתון */
+}
+
+.help-section {
+  font-size: 1.1em; /* גודל טקסט */
+  line-height: 1.6; /* גובה שורה */
+}
+
+.help-subsection {
+  background: var(--help-subsection-bg); /* צבע רקע */
+  padding: 20px; /* מרווח פנימי */
+  border-radius: 10px; /* פינות מעוגלות */
+  margin-bottom: 20px; /* מרווח תחתון */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* צל קל */
+}
+
+.help-subsection-title {
+  color: var(--help-subsection-title-color); /* צבע כותרת */
+  font-size: 1.6em; /* גודל טקסט */
+  margin-bottom: 15px; /* מרווח תחתון */
+}
+
+/* סגנונות לסרגלי התקדמות */
+#progressBar, #importProgress {
+  position: fixed; /* מיקום קבוע */
+  top: 20px; left: 20px; /* מיקום בפינה */
+  background: var(--table-bg); /* צבע רקע */
+  padding: 15px; /* מרווח פנימי */
+  border-radius: 12px; /* פינות מעוגלות */
+  box-shadow: var(--shadow); /* צל עדין */
+  z-index: 2000; /* שכבה עליונה */
+  text-align: center; /* מרכוז טקסט */
+  width: 250px; /* רוחב קבוע */
+}
+
+#progressBar p, #importProgress p {
+  margin: 0 0 10px 0; /* מרווח תחתון */
+}
+
+#progressBar progress, #importProgress progress {
+  width: 100%; /* רוחב מלא */
+  height: 20px; /* גובה קבוע */
+}
+
+/* סגנונות למודל הגדרות */
+#settingsModal .modal-content {
+  text-align: center; /* מרכוז טקסט */
+  max-width: 650px; /* רוחב מקסימלי */
+}
+
+#settingsModal .modal-content button {
+  display: inline-block; /* תצוגה בשורה */
+  margin: 10px auto; /* מרווח אנכי ומרכוז */
+}
+
+
+/* סגנונות למודל יצירת סיירת */
+#campaignModal .modal-content {
+  max-width: 800px;
+}
+.form-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.form-row input,
+.form-row select {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1em;
+}
+.form-actions {
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* סגנונות לבחירת תורמים במודל סיירת */
+#campaignDonorsContainer {
+  display: flex; /* פריסה גמישה */
+  flex-direction: column; /* כיוון אנכי */
+  gap: 10px; /* מרווח בין תוויות */
+  max-height: 300px; /* גובה מקסימלי */
+  overflow-y: auto; /* גלילה אנכית */
+  padding: 10px; /* מרווח פנימי */
+  border: 1px solid var(--btn-bg); /* גבול בצבע הכפתור */
+  border-radius: 8px; /* פינות מעוגלות */
+  background-color: var(--modal-bg); /* צבע רקע */
+  box-shadow: var(--shadow); /* צל עדין */
+}
+
+#campaignDonorsContainer label {
+  display: flex; /* פריסה גמישה */
+  align-items: center; /* יישור אנכי */
+  padding: 12px; /* מרווח פנימי */
+  border-radius: 5px; /* פינות מעוגלות */
+  background-color: var(--checkbox-bg); /* צבע רקע */
+  transition: background-color 0.3s ease, transform 0.3s ease; /* מעבר חלק */
+  cursor: pointer; /* סמן יד */
+}
+
+#campaignDonorsContainer label:hover {
+  background-color: var(--checkbox-hover-bg); /* צבע רקע ב-hover */
+  transform: translateY(-2px); /* הרמה קלה */
+}
+
+#campaignDonorsContainer input[type="checkbox"] {
+  margin-left: 15px; /* מרווח שמאלי */
+  cursor: pointer; /* סמן יד */
+  width: 18px; height: 18px; /* גודל קבוע */
+}
+
+#campaignDonorsContainer label span {
+  margin-left: 10px; /* מרווח שמאלי */
+  flex: 1; /* גמישות ברוחב */
+  font-size: 1em; /* גודל טקסט */
+  color: var(--text-color); /* צבע טקסט */
+}
+
+#campaignDonorsContainer label span strong {
+  font-weight: 600; /* טקסט מודגש */
+}
+
+#campaignDonorsContainer label span small {
+  font-size: 0.9em; /* גודל טקסט קטן יותר */
+  color: var(--text-color); /* צבע טקסט */
+  opacity: 0.8; /* שקיפות קלה */
+}
+
+/* הנפשה לטקסט בתוך כרטיסי הסטטיסטיקה */
+.stat-card i,
+.stat-card h4,
+.stat-card p {
+  transition: transform 0.3s ease, text-shadow 0.2s ease;
+}
+
+.stat-card:hover i,
+.stat-card:hover h4,
+.stat-card:hover p {
+  transform: scale(1.1); /* הגדלת הטקסט ב-10% */
+}
+
+/* מרכוז הטקסט והלחצן במודל יצירת קשר */
+#phoneModal .modal-content {
+  width: 90%; max-width: 200px; /* רוחב מקסימלי */
+  text-align: center; /* מרכוז הטקסט */
+}
+
+#phoneModal .modal-content button {
+  display: block; /* הופך את הלחצן לבלוק */
+  margin: 15px auto; /* מרווח עליון ותחתון ומרכוז אופקי */
+  width: fit-content; /* מתאים את רוחב הלחצן לתוכן */
+}
+
+/* סגנונות למודל תורמים */
+.form-section {
+  padding-top: 0; /* מבטל את המרווח הפנימי העליון מעל הכותרת */
+  margin-bottom: 10px; /* מוסיף מרווח תחתון של 20 פיקסלים לשיפור הקריאות */
+}
+
+.form-section h4 {
+  margin-top: 0; /* מסיר את המרווח העליון מעל הכותרת ברמה 4 */
+  margin-bottom: 7px; /* מוסיף מרווח תחתון של 10 פיקסלים להפרדה מהתוכן */
+  font-size: 1.2em; /* קובע גודל פונט של 1.2em (יחסית לגודל הבסיס) */
+  color: var(--text-color); /* משתמש בצבע טקסט המוגדר במשתנה --text-color */
+}
+
+.form-row {
+  display: grid; /* מגדיר את הפריסה כ-grid לניהול עמודות גמיש */
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* יוצר עמודות אוטומטיות עם רוחב מינימלי של 150 פיקסלים ומקסימלי של 1fr */
+  gap: 10px; /* מוסיף מרווח של 10 פיקסלים בין תאי ה-grid */
+  margin-bottom: 10px; /* מוסיף מרווח תחתון של 10 פיקסלים לשורה */
+}
+
+.form-group {
+  flex: 1; /* מאפשר לקבוצת הטופס להתרחב ולמלא את השטח הזמין */
+}
+
+.form-group label {
+  display: block; /* מציג את התווית כבלוק, כך שתופיע מעל השדה */
+  margin-bottom: 5px; /* מוסיף מרווח תחתון של 5 פיקסלים מתחת לתווית */
+  font-size: 1em; /* קובע גודל פונט סטנדרטי של 1em */
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%; /* קובע רוחב מלא של 100% בתוך ה-container */
+  padding: 6px; /* מוסיף מרווח פנימי של 6 פיקסלים סביב התוכן */
+  border: 1px solid #ccc; /* מוסיף גבול דק בצבע אפור בהיר (#ccc) */
+  border-radius: 6px; /* יוצר פינות מעוגלות ברדיוס של 6 פיקסלים */
+  font-size: 1em; /* קובע גודל פונט סטנדרטי של 1em */
+}
+
+textarea {
+  resize: vertical; /* מאפשר שינוי גודל אנכי בלבד של תיבת הטקסט */
+  height: 60px; /* קובע גובה התחלתי של 100 פיקסלים לתיבת הטקסט */
+}
+
+.modal-content {
+  padding: 20px; /* מוסיף מרווח פנימי של 20 פיקסלים מסביב לתוכן המודל */
+}
+
+/* סגנון בסיסי ללחצן יצוא הגרף במודל */
+#exportModalChartBtn {
+  background-color: var(--btn-bg); /* צבע רקע מותאם לעיצוב הכללי */
+  color: var(--btn-text); /* צבע טקסט תואם */
+  padding: 10px 15px; /* מרווח פנימי למראה נוח ומרווח */
+  border: none; /* הסרת גבול ברירת מחדל */
+  border-radius: 8px; /* פינות מעוגלות למראה רך */
+  cursor: pointer; /* שינוי הסמן ליד בעת ריחוף */
+  box-shadow: var(--shadow); /* צל עדין להוספת עומק */
+  transition: all var(--transition-speed) ease; /* מעבר חלק לאפקטים */
+  position: absolute; /* מיקום מוחלט בתוך המודל */
+  top: 10px; /* מרווח מהחלק העליון */
+  right: 50px; /* מיקום מימין, לצד לחצן הסגירה */
+  font-size: 13px; /* גודל טקסט קריא */
+  display: flex; /* יישור תוכן עם flex */
+  align-items: center; /* יישור אנכי למרכז */
+  gap: 2px; /* מרווח בין אייקון לטקסט */
+}
+/* אפקט בעת ריחוף מעל הלחצן */
+#exportModalChartBtn:hover {
+  background-color: var(--btn-hover-bg); /* שינוי צבע רקע לריחוף */
+  transform: translateY(-2px); /* הרמה קלה של הלחצן */
+}
+/* אפקט בעת לחיצה על הלחצן */
+#exportModalChartBtn:active {
+  transform: scale(0.98); /* הקטנה קלה למראה תגובה */
+}
+
+#purchaseMessage .modal-content {
+    background-color: #f8f9fa; /* רקע אפור בהיר */
+    border-radius: 15px; /* פינות מעוגלות */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* צל עדין לעומק */
+    padding: 30px; /* מרווח פנימי מוגדל */
+    text-align: center; /* מרכוז טקסט */
+    max-width: 500px; /* רוחב מקסימלי מוגבל */
+}
+
+#purchaseMessage h3 {
+    color: #dc3545; /* אדום לבולטות */
+    font-size: 1.2em; /* גודל כותרת גדול יותר */
+    margin-bottom: 20px; /* מרווח תחתון */
+}
+
+#purchaseMessage p {
+    font-size: 1em; /* גודל טקסט גדול יותר */
+    color: #333; /* צבע טקסט כהה לקריאות */
+    margin-bottom: 20px; /* מרווח תחתון */
+}
+
+#purchaseMessage a.purchase-button {
+    background-color: #28a745; /* ירוק לכפתור רכישה */
+    color: white; /* טקסט לבן */
+    padding: 12px 15px; /* מרווח פנימי */
+    border-radius: 8px; /* פינות מעוגלות */
+    text-decoration: none; /* הסרת קו תחתון */
+    font-size: 1.0em; /* גודל טקסט */
+    display: inline-block; /* תצוגה כבלוק בשורה */
+    transition: background-color 0.3s ease; /* מעבר חלק בצבע */
+}
+
+#purchaseMessage a.purchase-button:hover {
+    background-color: #218838; /* גוון כהה יותר ב-hover */
+}
+
+/* גופני המערכת */
+@font-face {
+  font-family: 'Rubik';
+  font-style: normal;
+  font-weight: 400;
+  src: url('fonts/Rubik-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Rubik';
+  font-style: normal;
+  font-weight: 600;
+  src: url('fonts/Rubik-Bold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Assistant';
+  font-style: normal;
+  font-weight: 400;
+  src: url('fonts/Assistant-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Assistant';
+  font-style: normal;
+  font-weight: 600;
+  src: url('fonts/Assistant-Bold.ttf') format('truetype');
+}
